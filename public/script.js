@@ -29,7 +29,7 @@ async function start() {
   const result = await axios.get('config.json');
   const config = result.data;
 
-  const router = new VueRouter();
+  const router = new VueRouter({mode: 'history'});
   const persistentFields = ['params', 'modelName', 'stlUrl', 'gridSize', 'lang'];
 
   const store = new Vuex.Store({
@@ -128,7 +128,7 @@ async function start() {
       },
 
       currentUrl() {
-        return '/#' + this.$route.fullPath;
+        return this.$route.fullPath;
       }
     },
 
