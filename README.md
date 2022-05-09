@@ -1,12 +1,13 @@
-# SCAD JS Project
+# SCAD customizable models in Web interface
 
-This is a project starter for **scad-js** project, just clone in, run the Build setup commond and start editing the source files, documentation is available at the main project [scad-js](https://github.com/20lives/scad-js),
+![](public/og-image.png)
 
-## Requirements
-- `openscad` command at `$PATH`
+## Features
+- Generate SCAD and STL files for built-in models
+- Send link to constructor, all settings will encoded in URL
 
-## Build Setup
-```
-npm install
-npm start
-```
+## Models
+- Funnel
+- Shim
+- Cup
+- Cap

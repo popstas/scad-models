@@ -24,6 +24,7 @@ h2 {
 a {
   color: #666;
   text-decoration: none;
+  cursor: pointer;
 }
 a:hover {
   text-decoration: underline;
@@ -31,6 +32,12 @@ a:hover {
 
 .statusText, .errorText {
   margin-left: 10px;
+}
+
+footer {
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
 }
 
 .el-form {

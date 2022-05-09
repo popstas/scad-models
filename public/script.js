@@ -58,6 +58,7 @@ async function start() {
         errorText: '',
         name: '', // название модели
         positionZ: 0,
+        dialogVisible: false,
       }
     },
 

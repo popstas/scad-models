@@ -29,6 +29,16 @@
 <body>
   
   <div id="app">
+    <el-dialog
+      title="SCAD Models"
+      :visible.sync="dialogVisible"
+    >
+      <p>I often print same base models, just change sizes.</p>
+      <p>This service created for speedup STL generate.</p>
+      <p><a href="https://github.com/popstas/scad-models" target="_blank">https://github.com/popstas/scad-models</a></p>
+    </el-dialog>
+
+
     <el-form label-width="190px" :model="params">
       <div class="stl-preview-mobile" v-loading="isProcess">
         <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
@@ -81,9 +91,9 @@
         <el-button @click="saveStl" type="primary">Generate STL</el-button>
         <span class="statusText" v-html="statusText"></span>
         <span class="errorText" v-html="errorText"></span>
-        <a class="download-link" :href="stlUrl">STL - print it</a>
+        <a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> STL - print it</a>
         <a class="download-link" :href="stlUrl.replace(/\.stl/, '.scad')">SCAD - edit in OpenSCAD</a>
-        <a class="download-link" :href="currentUrl">Link</a>
+        <a class="download-link" :href="currentUrl"><i class="el-icon-share"></i> Link</a>
       </div>
 
 
@@ -103,6 +113,10 @@
               @on-load="onStlLoad"
       />
     </div>
+
+    <footer>
+      <a @click.prevent="dialogVisible = !dialogVisible">About</a>
+    </footer>
     <!--<div style="text-align: center">
       <a :href="stlUrl">{{ this.stlUrl
               .replace(/\?.*/, '').replace('models/', '').replace('cache/', '')
