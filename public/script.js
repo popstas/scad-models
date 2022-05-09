@@ -26,6 +26,9 @@ async function start() {
     return computed;
   };
 
+  const result = await axios.get('config.json');
+  const config = result.data;
+
   const router = new VueRouter();
   const persistentFields = ['params', 'modelName', 'stlUrl', 'gridSize'];
 

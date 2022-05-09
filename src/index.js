@@ -2,8 +2,8 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { execSync } = require('child_process');
-const config = require('../public/config');
-const generators = require('./generators');
+const config = require('../config');
+const models = require('./models');
 
 start();
 
@@ -12,15 +12,28 @@ function start() {
 }
 
 function getModelConfig(name) {
-  return config.models.find(el => el.name === name);
+  return models[name];
 }
 
 function initExpress() {
   const app = express();
-  app.use(bodyParser.urlencoded());
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
+  // config.json
+  app.get('/config.json', (_req, res) => {
+    // const conf = {...config};
+    const conf = {models: []};
+    for (let name in models) {
+      const m = {...models[name]};
+      delete(m.generator);
+      conf.models.push(m);
+    }
+    res.json(conf);
+  })
+
   app.use('/', express.static('public'));
+
   app.use('/models', express.static('data'));
 
   app.post('/api/getStl', async (req, res) => {
@@ -68,8 +81,11 @@ function saveModel(params) {
   }
 
   console.log(params);
-  const generator = generators[params.model];
-  if (!generator) return;
+  const generator = models[params.model].generator;
+  if (!generator) {
+    console.log('generator not found for model ' + params.model);
+    return;
+  }
 
   const cachedPath = getCacheModel(params);
   if (cachedPath) {
