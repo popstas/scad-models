@@ -3,7 +3,7 @@ const { difference, cylinder } = require('scad-js');
 function generator(params) {
   const inner = parseFloat(params.inner / 2);
   const outer = parseFloat(params.outer / 2);
-  const wall = parseFloat(params.wall_width);
+  const wall = parseFloat(params.wall);
 
   return difference(
     cylinder(wall, outer, {center: false}),
@@ -16,22 +16,26 @@ function generator(params) {
 module.exports = {
   generator,
   name: 'shim',
-  label: 'Шайба',
+  label: 'Shim',
+  label_ru: 'Шайба',
   params: [
     {
-      label: 'Толщина стенки',
-      name: 'wall_width',
+      label: 'Wall Thickness',
+      label_ru: 'Толщина стенок',
+      name: 'wall',
       type: 'input',
       default: 0.8,
     },
     {
-      label: 'Диаметр отверстия',
+      label: 'Hole Diameter',
+      label_ru: 'Диаметр отверстия',
       name: 'inner',
       type: 'input',
       default: 5,
     },
     {
-      label: 'Диаметр шайбы',
+      label: 'Outer Diameter',
+      label_ru: 'Диаметр шайбы',
       name: 'outer',
       type: 'input',
       default: 10,
@@ -42,7 +46,7 @@ module.exports = {
     {
       name: '5mm x 10mm',
       params: {
-        wall_width: 1,
+        wall: 1,
         inner: 5,
         outer: 10,
       }

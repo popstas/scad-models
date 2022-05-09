@@ -30,7 +30,7 @@ async function start() {
   const config = result.data;
 
   const router = new VueRouter();
-  const persistentFields = ['params', 'modelName', 'stlUrl', 'gridSize'];
+  const persistentFields = ['params', 'modelName', 'stlUrl', 'gridSize', 'lang'];
 
   const store = new Vuex.Store({
     plugins: [
@@ -43,6 +43,25 @@ async function start() {
       modelName: 'funnel',
       stlUrl: 'models/last.stl',
       gridSize: 31,
+      lang: window.navigator.language === 'ru' ? 'ru' : 'en',
+      s: {
+        step1: '1. Select model',
+        step1_ru: '1. Найдите модель',
+        step2: '2. Customize',
+        step2_ru: '2. Настройте',
+        step3: '3. Get STL',
+        step3_ru: '3. Скачайте модель',
+        generate_stl: 'Generate STL',
+        generate_stl_ru: 'Создать STL',
+        stl_print: 'STL - print it',
+        stl_print_ru: 'STL - на печать',
+        scad_edit: 'SCAD - edit in OpenSCAD',
+        scad_edit_ru: 'SCAD - для OpenSCAD',
+        link: 'Link',
+        link_ru: 'Ссылка',
+        about: 'I often print same base models, just change sizes.<br/> This service created for speedup STL generate.',
+        about_ru: 'Я часто печатаю одни и те же базовые модели, только меняю размеры в модели.<br/> Этот сайт нужен, чтобы ускорить создание таких моделей.',
+      }
     },
     mutations: {
       ...mutationFabric(persistentFields),
@@ -75,12 +94,12 @@ async function start() {
     },
 
     computed: {
-      ...computedFabric(persistentFields),
+      ...computedFabric([...persistentFields, 's']),
       modelOptions() {
         return config.models.map(el => {
           return {
             value: el.name,
-            label: el.label || el.name,
+            label: this.t(el, 'label') || el.name,
           }
         });
       },
@@ -120,6 +139,12 @@ async function start() {
     },
 
     methods: {
+      t(el, field) {
+        const langField = `${field}_${this.lang}`;
+        if (el[langField]) return el[langField];
+        return el[field];
+      },
+
       async saveStl() {
         this.params = {...this.params, name: this.name};
         if (!this.params.model) return;

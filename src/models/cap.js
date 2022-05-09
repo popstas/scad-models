@@ -4,7 +4,7 @@ function generator(params) {
   const height = parseFloat(params.height);
   const inner_diam = parseFloat(params.inner_diam / 2) + 0.05; // 0.05 - gap for better fit
   const inner2_height = parseFloat(params.inner2_height);
-  const wall = parseFloat(params.wall_width);
+  const wall = parseFloat(params.wall);
 
   const bottomPart = cylinder(wall, inner_diam, {center: false})
     .translate([ 0, 0, 0 ]);
@@ -29,28 +29,33 @@ function generator(params) {
 module.exports = {
   generator,
   name: 'cap',
-  label: 'Крышка',
+  label: 'Cap',
+  label_ru: 'Крышка',
   params: [
     {
-      label: 'Толщина стенки',
-      name: 'wall_width',
+      label: 'Wall Thickness',
+      label_ru: 'Толщина стенок',
+      name: 'wall',
       type: 'input',
       default: 0.8,
     },
     {
-      label: 'Высота',
+      label: 'Height',
+      label_ru: 'Высота',
       name: 'height',
       type: 'input',
       default: 5,
     },
     {
-      label: 'Снаружи на диаметр',
+      label: 'Cup Diameter',
+      label_ru: 'Снаружи на диаметр',
       name: 'inner_diam',
       type: 'input',
       default: 10,
     },
     {
-      label: 'Высота внутренней пипки',
+      label: 'Inner Wall Height',
+      label_ru: 'Высота внутренней пипки',
       name: 'inner2_height',
       type: 'input',
       default: 2,
@@ -59,18 +64,20 @@ module.exports = {
 
   presets: [
     {
-      name: 'Под маленькую баночку',
+      name: 'For small cup',
+      name_ru: 'Под маленькую баночку',
       params: {
-        wall_width: 0.8,
+        wall: 0.8,
         height: 3,
         inner_diam: 11.6,
         inner2_height: 5,
       }
     },
     {
-      name: 'Под маленькую воронку',
+      name: 'For small funnel',
+      name_ru: 'Под маленькую воронку',
       params: {
-        wall_width: 0.8,
+        wall: 0.8,
         height: 3,
         inner_diam: 9.4,
         inner2_height: 5,

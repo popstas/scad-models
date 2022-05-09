@@ -4,7 +4,7 @@ function generator(params) {
   const height = parseFloat(params.height);
   const top_diam = parseFloat(params.top_diam / 2);
   const bottom_diam = parseFloat(params.bottom_diam / 2);
-  const wall = parseFloat(params.wall_width); //0.8; //толщина стенок
+  const wall = parseFloat(params.wall); //0.8; //толщина стенок
 
   const topPart = difference(
     cylinder(height, [top_diam, bottom_diam], {center: false}),
@@ -23,28 +23,33 @@ function generator(params) {
 module.exports = {
   generator,
   name: 'cup',
-  label: 'Чашка / банка',
+  label: 'Cup / Jar',
+  label_ru: 'Чашка / банка',
   params: [
     {
-      label: 'Толщина стенки',
-      name: 'wall_width',
+      label: 'Wall Thickness',
+      label_ru: 'Толщина стенок',
+      name: 'wall',
       type: 'input',
       default: 0.8,
     },
     {
-      label: 'Высота',
+      label: 'Height',
+      label_ru: 'Высота',
       name: 'height',
       type: 'input',
       default: 50,
     },
     {
-      label: 'Верхний диаметр',
+      label: 'Top Diameter',
+      label_ru: 'Верхний диаметр',
       name: 'top_diam',
       type: 'input',
       default: 10,
     },
     {
-      label: 'Нижний диаметр',
+      label: 'Bottom Diameter',
+      label_ru: 'Нижний диаметр',
       name: 'bottom_diam',
       type: 'input',
       default: 10,
@@ -52,18 +57,20 @@ module.exports = {
   ],
   presets: [
     {
-      name: 'Маленькая баночка',
+      name: 'Small cup',
+      name_ru: 'Маленькая баночка',
       params: {
-        wall_width: 1.0,
+        wall: 1.0,
         height: 40,
         top_diam: 11.6,
         bottom_diam: 11.6,
       }
     },
     {
-      name: 'Баночка под маленькую воронку-крышку',
+      name: 'Cup for small funnel',
+      name_ru: 'Баночка под маленькую воронку-крышку',
       params: {
-        wall_width: 1.0,
+        wall: 1.0,
         height: 40,
         top_diam: 32.2,
         bottom_diam: 32.2,

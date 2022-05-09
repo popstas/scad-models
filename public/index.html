@@ -29,13 +29,19 @@
   <div id="app">
     <el-dialog
       title="SCAD Models"
+      :width="'80%'"
       :visible.sync="dialogVisible"
     >
-      <p>I often print same base models, just change sizes.</p>
-      <p>This service created for speedup STL generate.</p>
+      <p v-html="t(s, 'about')"></p>
       <p><a href="https://github.com/popstas/scad-models" target="_blank">https://github.com/popstas/scad-models</a></p>
     </el-dialog>
 
+    <div class="lang-select">
+      <el-radio-group v-model="lang" size="small">
+        <el-radio-button label="en"></el-radio-button>
+        <el-radio-button label="ru"></el-radio-button>
+      </el-radio-group>
+    </div>
 
     <el-form label-width="190px" :model="params">
       <div class="stl-preview-mobile" v-loading="isProcess">
@@ -56,7 +62,7 @@
       </div>
 
       <div class="step step-1">
-        <h3>1. Select model:</h3>
+        <h3>{{ t(s, 'step1') }}:</h3>
         <el-form-item class="form-model-item">
           <el-select v-model="modelName">
             <el-option
@@ -68,32 +74,32 @@
           </el-select>
         </el-form-item>
         <span class="presets">
-          <a class="preset-link" v-for="p of presets" :key="p.name" v-html="p.name" @click.prevent="setPreset(p)"></a>
+          <a class="preset-link" v-for="p of presets" :key="p.name" v-html="t(p, 'name')" @click.prevent="setPreset(p)"></a>
         </span>
       </div>
 
       <div class="step">
-        <h3>2. Customize:</h3>
+        <h3>{{ t(s, 'step2') }}:</h3>
         <div class="form-params">
-          <el-form-item v-for="item of paramsInputs" :key="item.name" :label="item.label">
+          <el-form-item v-for="item of paramsInputs" :key="item.name" :label="t(item, 'label')">
             <el-input v-if="item.type === 'input'" v-model="params[item.name]"></el-input>
           </el-form-item>
         </div>
-      </el-form>
-    </div>
-
-
-    <div class="step">
-      <h3>3. Get STL:</h3>
-      <div :class="{ processing: isProcess, actions: true}">
-        <el-button @click="saveStl" type="primary">Generate STL</el-button>
-        <span class="statusText" v-html="statusText"></span>
-        <span class="errorText" v-html="errorText"></span>
-        <a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> STL - print it</a>
-        <a class="download-link" :href="stlUrl.replace(/\.stl/, '.scad')">SCAD - edit in OpenSCAD</a>
-        <a class="download-link" :href="currentUrl"><i class="el-icon-share"></i> Link</a>
       </div>
 
+
+      <div class="step">
+        <h3>{{ t(s, 'step3') }}:</h3>
+        <div :class="{ processing: isProcess, actions: true}">
+          <el-button @click="saveStl" type="primary" v-html="t(s, 'generate_stl')"></el-button>
+          <span class="statusText" v-html="statusText"></span>
+          <span class="errorText" v-html="errorText"></span>
+          <a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+          <a class="download-link" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
+          <a class="download-link" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
+        </div>
+      </div>
+    </el-form>
 
     <div class="stl-preview" v-loading="isProcess">
       <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->

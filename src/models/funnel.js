@@ -3,7 +3,7 @@ const { difference, cylinder, union } = require('scad-js');
 function generator(params) {
   params.part1_diam = parseFloat(params.part1_diam / 2);
   params.part3_diam = parseFloat(params.part3_diam / 2);
-  const wall = parseFloat(params.wall_width); //0.8; //толщина стенок
+  const wall = parseFloat(params.wall); //0.8; //толщина стенок
 
   params.part1_height = parseFloat(params.part1_height);
   params.part2_height = parseFloat(params.part2_height);
@@ -46,41 +46,48 @@ function generator(params) {
 module.exports = {
   generator,
   name: 'funnel',
-  label: 'Воронка',
+  label: 'Funnel',
+  label_ru: 'Воронка',
   params: [
     {
-      label: 'Толщина стенки',
-      name: 'wall_width',
+      label: 'Wall Thickness',
+      label_ru: 'Толщина стенок',
+      name: 'wall',
       type: 'input',
       default: 0.8,
     },
     {
-      label: 'Верх: диаметр',
+      label: 'Top Diameter',
+      label_ru: 'Верх: диаметр',
       name: 'part1_diam',
       type: 'input',
       default: 9.64
     },
     {
-      label: 'Низ: диаметр',
+      label: 'Bottom Diameter',
+      label_ru: 'Низ: диаметр',
       name: 'part3_diam',
       type: 'input',
       default: 15,
     },
 
     {
-      label: 'Верх: высота',
+      label: 'Top Height',
+      label_ru: 'Верх: высота',
       name: 'part1_height',
       type: 'input',
       default: 10,
     },
     {
-      label: 'Середина: высота',
+      label: 'Middle Height',
+      label_ru: 'Середина: высота',
       name: 'part2_height',
       type: 'input',
       default: 20,
     },
     {
-      label: 'Низ: высота',
+      label: 'Bottom Height',
+      label_ru: 'Низ: высота',
       name: 'part3_height',
       type: 'input',
       default: 10
@@ -88,9 +95,10 @@ module.exports = {
   ],
   presets: [
     {
-      name: 'Маленькая',
+      name: 'Small',
+      name_ru: 'Маленькая',
       params: {
-        wall_width: 0.8,
+        wall: 0.8,
         part1_diam: 33.8,
         part3_diam: 9.64,
         part1_height: 5,
@@ -99,20 +107,10 @@ module.exports = {
       }
     },
     {
-      name: 'Большая',
+      name: 'Middle',
+      name_ru: 'Под полторашку',
       params: {
-        wall_width: 0.8,
-        part1_diam: 100,
-        part3_diam: 31.8,
-        part1_height: 5,
-        part2_height: 60,
-        part3_height: 20,
-      }
-    },
-    {
-      name: 'Под полторашку',
-      params: {
-        wall_width: 0.8,
+        wall: 0.8,
         part1_diam: 80,
         part3_diam: 21,
         part1_height: 5,
@@ -121,9 +119,22 @@ module.exports = {
       }
     },
     {
-      name: 'Переходник на большую воронку',
+      name: 'Big',
+      name_ru: 'Большая',
       params: {
-        wall_width: 1,
+        wall: 0.8,
+        part1_diam: 100,
+        part3_diam: 31.8,
+        part1_height: 5,
+        part2_height: 60,
+        part3_height: 20,
+      }
+    },
+    {
+      name: 'Connector for big funnel',
+      name_ru: 'Переходник на большую воронку',
+      params: {
+        wall: 1,
         part1_diam: 34.9,
         part3_diam: 34.9,
         part1_height: 0,
