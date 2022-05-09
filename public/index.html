@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Customizable Models - STL, SCAD generator</title>
+  <meta property="og:title" content="3D Customizable Models - STL, SCAD generator"/>
+  <meta name="description" content="1.Select model, 2. Customize, 3. Download STL or SCAD, 4. Print"/>
+  <meta property="og:image" content="/og-image.png"/>
+  <link rel="image_src" href="/og-image.png"/>
+  <link rel="icon" href="favicon.png"/>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router@3.5.3"></script>
+  <script src="https://unpkg.com/vuex@3.6.2/dist/vuex.js"></script>
+  <script src="https://unpkg.com/vuex-persistedstate@4.0.0-beta.3/dist/vuex-persistedstate.umd.js"></script>
+  <script src="https://unpkg.com/element-ui@2.15.8/lib/index.js"></script>
+  <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/vue-3d-model@1.4.0/dist/vue-3d-model.umd.js"></script>
+  <script src="https://unpkg.com/vue-clipboard2@0.3.3/vue-clipboard.js"></script>
+  <script src="https://unpkg.com/three@0.140.1/build/three.js"></script>
+  <script src="config.js?v=1"></script>
+  <script src="script.js?v=1"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.8/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+  
+  <div id="app">
+    <el-form label-width="190px" :model="params">
+      <div class="stl-preview-mobile" v-loading="isProcess">
+        <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
+        <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
+        <model-stl ref="stlMobile"
+                   :src="stlUrl"
+                   :background-color="0xefefef"
+                   :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
+                   :position="{x: 0, y: 0, z: positionZ}"
+                   :camera-position="{x: 0, y: 80, z: 50}"
+                   :camera-rotation="{x: 0, y: 0, z: 0}"
+                   :scale="{x: 0.5, y: 0.5, z: 0.5}"
+                   :width="150"
+                   :height="150"
+                   @on-load="onStlLoad"
+        />
+      </div>
+
+      <div class="step step-1">
+        <h3>1. Select model:</h3>
+        <el-form-item class="form-model-item">
+          <el-select v-model="modelName">
+            <el-option
+              v-for="item in modelOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <span class="presets">
+          <a class="preset-link" v-for="p of presets" :key="p.name" v-html="p.name" @click.prevent="setPreset(p)"></a>
+        </span>
+      </div>
+
+      <div class="step">
+        <h3>2. Customize:</h3>
+        <div class="form-params">
+          <el-form-item v-for="item of paramsInputs" :key="item.name" :label="item.label">
+            <el-input v-if="item.type === 'input'" v-model="params[item.name]"></el-input>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+
+
+    <div class="step">
+      <h3>3. Get STL:</h3>
+      <div :class="{ processing: isProcess, actions: true}">
+        <el-button @click="saveStl" type="primary">Generate STL</el-button>
+        <span class="statusText" v-html="statusText"></span>
+        <span class="errorText" v-html="errorText"></span>
+        <a class="download-link" :href="stlUrl">STL - print it</a>
+        <a class="download-link" :href="stlUrl.replace(/\.stl/, '.scad')">SCAD - edit in OpenSCAD</a>
+        <a class="download-link" :href="currentUrl">Link</a>
+      </div>
+
+
+    <div class="stl-preview" v-loading="isProcess">
+      <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
+      <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
+      <model-stl ref="stl"
+              :src="stlUrl"
+              :background-color="0xefefef"
+              :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
+              :position="{x: 0, y: 0, z: positionZ}"
+              :camera-position="{x: 0, y: 80, z: 50}"
+              :camera-rotation="{x: 0, y: 0, z: 0}"
+              :scale="{x: 0.5, y: 0.5, z: 0.5}"
+              :width="modelWidth"
+              :height="modelHeight"
+              @on-load="onStlLoad"
+      />
+    </div>
+    <!--<div style="text-align: center">
+      <a :href="stlUrl">{{ this.stlUrl
+              .replace(/\?.*/, '').replace('models/', '').replace('cache/', '')
+              .replace(/__/g, ' — ')
+              .replace('.stl', '').replace(/[T]/g, ' — ').replace(/[Z]/g, '')
+              .replace(/\.\d+/, '').replace(/_/g, ':')}}</a>
+    </div>-->
+  </div>
+</body>
+</html>
