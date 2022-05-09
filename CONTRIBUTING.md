@@ -9,5 +9,4 @@ npm start
 
 ## Add model module
 - Place to `src/models/modelName.js`
-- Export `{ generator }`
-
+- Export `{ name, label, generator, params, presets }`

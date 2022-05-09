@@ -4,7 +4,7 @@
 
 ## Features
 - Generate SCAD and STL files for built-in models
-- Send link to constructor, all settings will encoded in URL
+- Send link to constructor, all settings will be encoded in URL
 
 ## Models
 - Funnel
