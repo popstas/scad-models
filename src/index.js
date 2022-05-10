@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { execSync } = require('child_process');
@@ -30,6 +31,22 @@ function initExpress() {
       conf.models.push(m);
     }
     res.json(conf);
+  })
+
+  app.get('/api/downloadStl', (req, res) => {
+    const cachePath = getCacheModel(req.query);
+    if (!cachePath) {
+      res.end('404');
+      return;
+    }
+    const stlPath = cachePath.replace(/\.scad$/, '.stl');
+
+    const filename = getFilename(req.query) + '.stl';
+    res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(filename));
+    res.setHeader('Content-Transfer-Encoding', 'binary');
+    res.setHeader('Content-Type', 'application/octet-stream');
+
+    res.sendFile(path.resolve(stlPath))
   })
 
   app.use('/', express.static('public'));
@@ -93,6 +110,8 @@ function saveModel(params) {
     return cachedPath;
   }
 
+  const filePath = getModelPath(params);
+
   console.log("Generate...");
   const output = generator(params);
   const rotated = output;//.rotate([180, 180, 0])
@@ -101,8 +120,6 @@ function saveModel(params) {
   // const name = sanitize(params.name) ? `__${sanitize(params.name)}` : '';
   // const filename = `${date}__${params.model}${name}.scad`;
   // const filePath = './data/' + filename;
-
-  const filePath = getModelPath(params);
 
   fs.writeFileSync(filePath, rotated.serialize({ $fn: 100 }));
   console.log("Saved to " + filePath);
@@ -130,6 +147,19 @@ function getCacheKey(params) {
   const paramsQuery = parts.map(p => `${p.name}=${encodeURIComponent(p.value)}`).join(',');
   const key = `${params.model}-${paramsQuery}`.substring(0, 250);
   return key;
+}
+
+function getFilename(params) {
+  const h = new Date().getHours();
+  const m = new Date().getMinutes();
+  let filename = getCacheKey(params)
+    .replace('-', `-${h}${m}-`)
+    .replace(/=/g, '')
+    .replace(/part/g, 'p')
+    .replace(/height/g, 'h')
+    .replace(/diam/g, 'd')
+  if (params.name) filename += `-${params.name}`;
+  return filename;
 }
 
 function getModelPath(params) {

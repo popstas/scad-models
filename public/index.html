@@ -94,7 +94,8 @@
           <el-button @click="saveStl" type="primary" v-html="t(s, 'generate_stl')"></el-button>
           <span class="statusText" v-html="statusText"></span>
           <span class="errorText" v-html="errorText"></span>
-          <a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+          <a class="download-link" :href="downloadUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+          <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
           <a class="download-link" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
           <a class="download-link" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
         </div>

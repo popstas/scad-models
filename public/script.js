@@ -88,6 +88,9 @@ async function start() {
       modelName(val) {
         this.params.model = val;
       },
+      name(val) {
+        this.params.name = val;
+      },
       stlUrl() {
         this.positionZ = 0; // reset before new model load, for correct center
       }
@@ -129,6 +132,14 @@ async function start() {
 
       currentUrl() {
         return this.$route.fullPath;
+      },
+
+      downloadUrl() {
+        const esc = encodeURIComponent;
+        const query = Object.keys(this.params)
+          .map(k => esc(k) + '=' + esc(this.params[k]))
+          .join('&');
+        return '/api/downloadStl?' + query;
       }
     },
 
@@ -202,7 +213,7 @@ async function start() {
       },
 
       setPreset(p) {
-        this.name = p.name;
+        this.name = this.t(p, 'name');
         for (let name in p.params) {
           this.params[name] = p.params[name];
         }
