@@ -3,10 +3,11 @@
 ![](public/og-image.png)
 
 ## Features
-- Generate SCAD and STL files for built-in models
-- Send link to constructor, all settings will be encoded in URL
-- STL filenames optimized for 30 symbols filename limit on printers
+- Generate STL and SCAD files
+- Customizable model params
 - Kits - model set from several models
+- Share - send link to tuned model
+- Printer-friendly - STL filenames optimized
 
 ## Models
 - Funnel
