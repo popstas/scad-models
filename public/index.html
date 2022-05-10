@@ -70,6 +70,10 @@
               :key="item.value"
               :label="item.label"
               :value="item.value">
+              <div>
+                <img class="option-image" v-if="item.image" :src="item.image"/>
+                <span class="option-item" v-html="item.label"></span>
+              </div>
             </el-option>
           </el-select>
         </el-form-item>

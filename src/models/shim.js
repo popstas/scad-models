@@ -18,6 +18,7 @@ module.exports = {
   name: 'shim',
   label: 'Shim',
   label_ru: 'Шайба',
+  preview: '/previews/shim.png',
   params: [
     {
       label: 'Wall Thickness',

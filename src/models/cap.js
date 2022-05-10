@@ -32,6 +32,7 @@ module.exports = {
   name: 'cap',
   label: 'Cap',
   label_ru: 'Крышка',
+  preview: '/previews/cap.png',
   params: [
     {
       label: 'Wall Thickness',

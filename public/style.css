@@ -59,6 +59,17 @@ footer {
   opacity: 1;
 }
 
+.option-image {
+  float: right;
+  width: 32px;
+  height: 32px;
+}
+.option-item {
+  display: inline-block;
+  line-height: 32px;
+  padding-left: 5px;
+}
+
 .el-form {
   max-width: 1440px;
   margin: 0 auto;

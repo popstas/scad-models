@@ -116,6 +116,7 @@ async function start() {
           return {
             value: el.name,
             label: this.t(el, 'label') || el.name,
+            image: el.preview || '',
           }
         });
       },
@@ -240,7 +241,10 @@ async function start() {
         const abrMap = {
           part: 'P',
           inner: 'In',
+          outer: 'Ou',
           height: 'H',
+          top: 'Tp',
+          bottom: 'Bt',
           diam: 'D',
           wall: 'W',
         };
