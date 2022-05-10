@@ -98,6 +98,9 @@
           <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
           <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
           <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
+          <div class="download-link">
+            <span v-if="metaInfo" v-html="metaInfo"></span>
+          </div>
         </div>
       </div>
     </el-form>

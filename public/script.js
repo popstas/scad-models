@@ -30,7 +30,7 @@ async function start() {
   const config = result.data;
 
   const router = new VueRouter({mode: 'history'});
-  const persistentFields = ['params', 'stlUrl', 'stlParams', 'gridSize', 'lang'];
+  const persistentFields = ['params', 'stlUrl', 'stlParams', 'stlMeta', 'gridSize', 'lang'];
   const computedFields = ['modelName', 's'];
 
   const store = new Vuex.Store({
@@ -153,6 +153,15 @@ async function start() {
           .map(k => esc(k) + '=' + esc(this.stlParams[k]))
           .join('&');
         return '/api/downloadStl?' + query;
+      },
+
+      metaInfo() {
+        if (!this.stlMeta?.box) return '';
+        const parts = [
+          this.stlMeta.box.join('mm x ') + 'mm',
+          Math.round(this.stlMeta.weight) + 'gm',
+        ]
+        return parts.join(', ');
       }
     },
 
@@ -190,6 +199,7 @@ async function start() {
         if (!answer.data.stlPath) return;
 
         this.stlParams = {...this.params};
+        this.stlMeta = answer.data;
         this.stlUrl = answer.data.stlPath + '?mt=' + Date.now();
       },
 

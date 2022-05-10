@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const { execSync } = require('child_process');
 const config = require('../config');
 const models = require('./models');
+const NodeStl = require('node-stl');
 
 start();
 
@@ -74,7 +75,14 @@ function initExpress() {
     }
 
     const stlPath = pathStl.replace('./data', 'models');
-    res.json({stlPath});
+    const stl = new NodeStl(pathStl, { density: config.material.density});
+
+    res.json({
+      stlPath,
+      volume: stl.volume,
+      weight : stl.weight,
+      box : stl.boundingBox,
+    });
   });
 
   app.listen(config.port, () => { console.log(`listen port ${config.port}`); });
@@ -156,6 +164,7 @@ function getFilename(params) {
     .replace('-', `-${h}${m}-`)
     .replace(/=/g, '')
     .replace(/part/g, 'p')
+    .replace(/inner/g, 'in')
     .replace(/height/g, 'h')
     .replace(/diam/g, 'd')
   if (params.name) filename += `-${params.name}`;
