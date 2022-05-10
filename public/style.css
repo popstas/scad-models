@@ -8,6 +8,9 @@ h2 {
   font-size: 28px;
   margin-top: 0;
 }
+.step {
+  min-height: 70px;
+}
 .step h3 {
   color: #ccc;
   margin: 0 0 -15px;
@@ -93,6 +96,7 @@ footer {
 
 .stl-preview {
   margin-top: 15px;
+  text-align: center;
 }
 .stl-preview-mobile {
   display: none;

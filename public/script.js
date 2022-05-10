@@ -30,7 +30,8 @@ async function start() {
   const config = result.data;
 
   const router = new VueRouter({mode: 'history'});
-  const persistentFields = ['params', 'modelName', 'stlUrl', 'gridSize', 'lang'];
+  const persistentFields = ['params', 'stlUrl', 'gridSize', 'lang'];
+  const computedFields = ['modelName', 's'];
 
   const store = new Vuex.Store({
     plugins: [
@@ -40,8 +41,8 @@ async function start() {
     ],
     state: {
       params: {},
-      modelName: 'funnel',
-      stlUrl: 'models/last.stl',
+      modelName: '',
+      stlUrl: '',
       gridSize: 31,
       lang: window.navigator.language === 'ru' ? 'ru' : 'en',
       s: {
@@ -61,10 +62,12 @@ async function start() {
         link_ru: 'Ссылка',
         about: 'I often print same base models, just change sizes.<br/> This service created for speedup STL generate.',
         about_ru: 'Я часто печатаю одни и те же базовые модели, только меняю размеры в модели.<br/> Этот сайт нужен, чтобы ускорить создание таких моделей.',
+        model: 'Model',
+        model_ru: 'Модель',
       }
     },
     mutations: {
-      ...mutationFabric(persistentFields),
+      ...mutationFabric([...persistentFields, ...computedFields]),
     },
   });
 
@@ -97,7 +100,7 @@ async function start() {
     },
 
     computed: {
-      ...computedFabric([...persistentFields, 's']),
+      ...computedFabric([...persistentFields, ...computedFields]),
       modelOptions() {
         return config.models.map(el => {
           return {
@@ -145,7 +148,8 @@ async function start() {
 
     mounted() {
       this.setParamsFromUrl();
-      if (!this.params.model) this.params.model = this.modelName;
+      if (!this.params.model) this.params.model = this.modelName; // TODO: possible it never happens
+      if (!this.modelName) this.modelName = this.params.model;
       setTimeout(this.saveStl, 100);
     },
 
@@ -182,14 +186,16 @@ async function start() {
         const mParams = this.model?.params;
 
         const query = {};
+        let isChanged = false;
         for (let name in this.params) {
           // only "model" and model params
           if (name !== 'model' && !mParams.find(el => el.name === name)) continue; // skip as not affected model
 
+          if (this.params[name] !== this.$route.query[name]) isChanged = true; // check for changes
           query[name] = this.params[name];
         }
 
-        this.$router.push({ path: '/', query });
+        if (isChanged) this.$router.push({ path: '/', query });
       },
 
       setParamsFromUrl() {

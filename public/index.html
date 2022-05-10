@@ -64,7 +64,7 @@
       <div class="step step-1">
         <h3>{{ t(s, 'step1') }}:</h3>
         <el-form-item class="form-model-item">
-          <el-select v-model="modelName">
+          <el-select v-model="modelName" :placeholder="t(s, 'model')">
             <el-option
               v-for="item in modelOptions"
               :key="item.value"
@@ -94,10 +94,10 @@
           <el-button @click="saveStl" type="primary" v-html="t(s, 'generate_stl')"></el-button>
           <span class="statusText" v-html="statusText"></span>
           <span class="errorText" v-html="errorText"></span>
-          <a class="download-link" :href="downloadUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+          <a class="download-link" v-if="stlUrl" :href="downloadUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
           <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
-          <a class="download-link" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
-          <a class="download-link" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
+          <a class="download-link" v-if="stlUrl" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
+          <a class="download-link" v-if="stlUrl" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
         </div>
       </div>
     </el-form>
