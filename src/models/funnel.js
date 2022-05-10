@@ -124,21 +124,9 @@ module.exports = {
       params: {
         wall: 0.8,
         part1_diam: 100,
-        part3_diam: 31.8,
+        part3_diam: 32.2,
         part1_height: 5,
         part2_height: 60,
-        part3_height: 20,
-      }
-    },
-    {
-      name: 'Connector for big funnel',
-      name_ru: 'Переходник на большую воронку',
-      params: {
-        wall: 1,
-        part1_diam: 34.9,
-        part3_diam: 34.9,
-        part1_height: 0,
-        part2_height: 0,
         part3_height: 20,
       }
     },

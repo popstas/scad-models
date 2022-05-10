@@ -2,11 +2,12 @@ const { difference, cylinder, union } = require('scad-js');
 
 function generator(params) {
   const height = parseFloat(params.height);
+  const lid_height = parseFloat(params.lid_height);
   const inner_diam = parseFloat(params.inner_diam / 2) + 0.05; // 0.05 - gap for better fit
   const inner2_height = parseFloat(params.inner2_height);
   const wall = parseFloat(params.wall);
 
-  const bottomPart = cylinder(wall, inner_diam, {center: false})
+  const bottomPart = cylinder(lid_height, inner_diam, {center: false})
     .translate([ 0, 0, 0 ]);
 
   const borderOuter = difference(
@@ -40,11 +41,18 @@ module.exports = {
       default: 0.8,
     },
     {
-      label: 'Height',
-      label_ru: 'Высота',
+      label: 'Wall Height',
+      label_ru: 'Высота стенок',
       name: 'height',
       type: 'input',
       default: 5,
+    },
+    {
+      label: 'Lid Height',
+      label_ru: 'Высота крышки',
+      name: 'lid_height',
+      type: 'input',
+      default: 0.8,
     },
     {
       label: 'Cup Diameter',
@@ -69,6 +77,7 @@ module.exports = {
       params: {
         wall: 0.8,
         height: 3,
+        lid_height: 0.8,
         inner_diam: 11.6,
         inner2_height: 5,
       }
@@ -79,8 +88,20 @@ module.exports = {
       params: {
         wall: 0.8,
         height: 3,
+        lid_height: 0.8,
         inner_diam: 9.4,
         inner2_height: 5,
+      }
+    },
+    {
+      name: 'Connector for big funnel',
+      name_ru: 'Соединитель большой воронки',
+      params: {
+        wall: 1,
+        height: 15,
+        lid_height: 0,
+        inner_diam: 32.2,
+        inner2_height: 0,
       }
     },
   ],
