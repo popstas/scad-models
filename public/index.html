@@ -78,49 +78,101 @@
         </span>
       </div>
 
-      <div class="step">
-        <h3>{{ t(s, 'step2') }}:</h3>
-        <div class="form-params">
-          <el-form-item v-for="item of paramsInputs" :key="item.name" :label="t(item, 'label')">
-            <el-input-number v-if="item.type === 'input'" v-model="params[item.name]" :step="0.1"></el-input-number>
-          </el-form-item>
-        </div>
-      </div>
+      <!-- main row -->
+      <el-row class="main-row">
 
+        <!-- left col -->
+        <el-col :sm="24" :md="8">
+          <div class="kits">
+            <el-form-item :label="t(s, 'or_select_kit')">
+              <el-select v-model="kitName" clearable :placeholder="t(s, 'kit')">
+                <el-option
+                        v-for="item in kits"
+                        :key="item.name"
+                        :label="t(item, 'name')"
+                        :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
 
-      <div class="step">
-        <h3>{{ t(s, 'step3') }}:</h3>
-        <div :class="{ processing: isProcess, actions: true}">
-          <el-button @click="saveStl" type="primary" :disabled="isParamsGenerated" v-html="t(s, 'generate_stl')"></el-button>
-          <span class="statusText" v-html="statusText"></span>
-          <span class="errorText" v-html="errorText"></span>
-          <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="downloadUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
-          <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
-          <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
-          <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
-          <div class="download-link">
-            <span v-if="metaInfo" v-html="metaInfo"></span>
+            <div v-if="kitName">
+              <ul class="presets presets__list">
+                <li v-for="p of kit.items" :key="p.name">
+                  <a class="preset-link"
+                     v-html="p.name"
+                     @click.prevent="setPreset(p)"
+                  ></a>
+                </li>
+              </ul>
+              <a :class="{'download-link': true}" :href="downloadkitUrl"><i class="el-icon-download"></i> ZIP</a>
+            </div>
           </div>
-        </div>
-      </div>
-    </el-form>
 
-    <div class="stl-preview" v-loading="isProcess">
-      <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
-      <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
-      <model-stl ref="stl"
-              :src="stlUrl"
-              :background-color="0xefefef"
-              :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
-              :position="{x: 0, y: 0, z: positionZ}"
-              :camera-position="{x: 0, y: 80, z: 50}"
-              :camera-rotation="{x: 0, y: 0, z: 0}"
-              :scale="{x: 0.5, y: 0.5, z: 0.5}"
-              :width="modelWidth"
-              :height="modelHeight"
-              @on-load="onStlLoad"
-      />
-    </div>
+          <!-- step 2 -->
+          <div class="step">
+            <h3>{{ t(s, 'step2') }}:</h3>
+            <div v-if="model.preview" class="model-preview">
+              <el-popover width="500" placement="right">
+                <img :src="model.preview"/>
+                <el-link slot="reference">{{ t(s, 'scheme') }}</el-link>
+              </el-popover>
+            </div>
+
+            <el-form-item v-for="item of paramsInputs" :key="item.name" :label="t(item, 'label') + `, ${paramAbr(item.name)}`">
+              <el-input-number v-if="item.type === 'input'" v-model="params[item.name]" :step="0.1"></el-input-number>
+            </el-form-item>
+          </div>
+
+          <!-- step 3 -->
+          <div class="step">
+            <h3>{{ t(s, 'step3') }}:</h3>
+            <div :class="{ processing: isProcess, actions: true}">
+              <el-button @click="saveStl()" type="primary" :disabled="isParamsGenerated"
+                         v-html="t(s, 'generate_stl')"></el-button>
+              <span class="statusText" v-html="statusText"></span>
+              <span class="errorText" v-html="errorText"></span>
+              <a
+                :class="{
+                  'download-link': true,
+                  'link__changed': !isParamsGenerated,
+                  'el-button': isParamsGenerated,
+                  'el-button--success': isParamsGenerated
+                }"
+                style="margin-top:10px"
+                v-if="stlUrl"
+                :href="downloadUrl"
+              ><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+              <div class="download-link">
+                <span v-if="metaInfo" v-html="metaInfo"></span>
+              </div><br />
+              <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
+              <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
+              <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
+            </div>
+          </div>
+        </el-col>
+
+        <!-- main col -->
+        <el-col :sm="24" :md="16" class="model-stl">
+          <div class="stl-preview" v-loading="isProcess">
+            <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
+            <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
+            <model-stl ref="stl"
+                       :src="stlUrl"
+                       :background-color="0xefefef"
+                       :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
+                       :position="{x: 0, y: 0, z: positionZ}"
+                       :camera-position="{x: 0, y: 80, z: 50}"
+                       :camera-rotation="{x: 0, y: 0, z: 0}"
+                       :scale="{x: 0.5, y: 0.5, z: 0.5}"
+                       :width="modelWidth"
+                       :height="modelHeight"
+                       @on-load="onStlLoad"
+            />
+          </div>
+        </el-col>
+      </el-row>
+    </el-form>
 
     <footer>
       <a @click.prevent="dialogVisible = !dialogVisible">About</a>

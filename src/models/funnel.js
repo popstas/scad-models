@@ -48,6 +48,7 @@ module.exports = {
   name: 'funnel',
   label: 'Funnel',
   label_ru: 'Воронка',
+  preview: '/previews/funnel.png',
   params: [
     {
       label: 'Wall Thickness',
@@ -57,26 +58,19 @@ module.exports = {
       default: 0.8,
     },
     {
-      label: 'Top Diameter',
-      label_ru: 'Верх: диаметр',
-      name: 'part1_diam',
-      type: 'input',
-      default: 9.64
-    },
-    {
-      label: 'Bottom Diameter',
-      label_ru: 'Низ: диаметр',
+      label: 'Narrow Diameter',
+      label_ru: 'Узкий диаметр',
       name: 'part3_diam',
       type: 'input',
       default: 15,
     },
 
     {
-      label: 'Top Height',
-      label_ru: 'Верх: высота',
-      name: 'part1_height',
+      label: 'Narrow Height',
+      label_ru: 'Узкая высота',
+      name: 'part3_height',
       type: 'input',
-      default: 10,
+      default: 10
     },
     {
       label: 'Middle Height',
@@ -86,17 +80,25 @@ module.exports = {
       default: 20,
     },
     {
-      label: 'Bottom Height',
-      label_ru: 'Низ: высота',
-      name: 'part3_height',
+      label: 'Wide Height',
+      label_ru: 'Широкая высота',
+      name: 'part1_height',
       type: 'input',
-      default: 10
+      default: 10,
+    },
+    {
+      label: 'Wide Diameter',
+      label_ru: 'Широкий диаметр',
+      name: 'part1_diam',
+      type: 'input',
+      default: 9.64
     },
   ],
   presets: [
     {
       name: 'Small',
       name_ru: 'Маленькая',
+      id: 'small',
       params: {
         wall: 0.8,
         part1_diam: 33.8,
@@ -107,8 +109,9 @@ module.exports = {
       }
     },
     {
-      name: 'Middle',
+      name: 'Medium',
       name_ru: 'Под полторашку',
+      id: 'medium',
       params: {
         wall: 0.8,
         part1_diam: 80,
@@ -121,13 +124,27 @@ module.exports = {
     {
       name: 'Big',
       name_ru: 'Большая',
+      id: 'big',
       params: {
-        wall: 0.8,
+        wall: 1,
         part1_diam: 100,
         part3_diam: 32.2,
         part1_height: 5,
         part2_height: 60,
         part3_height: 20,
+      }
+    },
+    {
+      name: 'Big to med',
+      name_ru: 'Переходник с большой на полторашку',
+      id: 'big_to_med',
+      params: {
+        wall: 1,
+        part1_diam: 34.4,
+        part3_diam: 21,
+        part1_height: 5,
+        part2_height: 20,
+        part3_height: 25,
       }
     },
   ]

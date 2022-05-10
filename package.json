@@ -5,6 +5,7 @@
     "render": "node src/index.js && openscad dist/output.scad -o dist/output.stl"
   },
   "dependencies": {
+    "adm-zip": "^0.5.9",
     "body-parser": "^1.20.0",
     "express": "^4.18.1",
     "install": "^0.13.0",

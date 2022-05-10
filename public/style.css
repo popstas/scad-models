@@ -21,7 +21,9 @@ h2 {
 @media (max-width: 720px) {
   .step-1 {
     text-align: right;
-    margin-top: 50px;
+  }
+  .step-1 h3 {
+    padding-top: 40px;
   }
 }
 
@@ -43,16 +45,29 @@ footer {
   bottom: 5px;
   right: 5px;
 }
+.kits {
+  margin: 7px 3px;
+}
 
 .lang-select {
   position: absolute;
   right: 7px;
   top: 5px;
+  opacity: 0.5;
+}
+.lang-select:hover {
+  opacity: 1;
 }
 
 .el-form {
   max-width: 1440px;
   margin: 0 auto;
+}
+.el-form-item {
+  margin-bottom: 10px;
+}
+.el-button {
+  margin-top: 10px;
 }
 .form-model-item {
   display: inline-block;
@@ -63,10 +78,9 @@ footer {
     margin-top: -11px;
   }
 }
-.form-params {
+/*.form-params {
   columns: 1;
 }
-
 @media (min-width: 720px) {
   .form-params {
     columns: 2;
@@ -81,16 +95,31 @@ footer {
   .form-params {
     columns: 4;
   }
-}
+}*/
 
 .presets {
   display: inline-block;
-  margin: 0 0 2rem 1rem;
+  margin: 0;
 }
+.presets__list {
+  list-style: decimal inside;
+  padding: 0;
+  line-height: 1.5rem;
+}
+.model-preview {
+  margin: -8px 0 8px 318px;
+  /*max-width: 400px;
+  height: auto;*/
+}
+
 @media (max-width: 720px) {
   .presets {
-    display: block;
-    text-align: right;
+    /*display: block;*/
+    /*text-align: right;*/
+  }
+  .presets__list {
+    list-style: disc;
+    margin-left: 21px;
   }
 }
 
@@ -112,7 +141,7 @@ footer {
 .download-link {
   line-height: 3rem;
   display: inline-block;
-  padding: 0 3rem;
+  padding: 0 1.5rem;
 }
 .link__changed {
   opacity: 0.5;
@@ -122,7 +151,11 @@ footer {
   text-decoration: none !important;
   border-bottom: 1px dashed;
   margin-right: 10px;
+  margin-left: 4px;
   cursor: pointer;
+}
+.preset-link:hover {
+  text-shadow: 0 0 3px;
 }
 @media (max-width: 720px) {
   .preset-link {
@@ -132,6 +165,10 @@ footer {
     border-bottom: none;
     text-decoration: underline !important;
   }
+}
+
+.model-stl {
+  margin-top: -15px;
 }
 
 .actions {

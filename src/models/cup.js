@@ -59,6 +59,7 @@ module.exports = {
     {
       name: 'Small cup',
       name_ru: 'Маленькая баночка',
+      id: 'small',
       params: {
         wall: 1.0,
         height: 40,
@@ -69,6 +70,7 @@ module.exports = {
     {
       name: 'Cup for small funnel',
       name_ru: 'Баночка под маленькую воронку-крышку',
+      id: 'for_funnels',
       params: {
         wall: 1.0,
         height: 40,

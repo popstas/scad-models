@@ -65,6 +65,12 @@ async function start() {
         about_ru: 'Я часто печатаю одни и те же базовые модели, только меняю размеры в модели.<br/> Этот сайт нужен, чтобы ускорить создание таких моделей.',
         model: 'Model',
         model_ru: 'Модель',
+        kit: 'Kit',
+        kit_ru: 'Набор',
+        or_select_kit: 'Or select Kit:',
+        or_select_kit_ru: 'Или выберите набор:',
+        scheme: 'Scheme',
+        scheme_ru: 'Чертёж',
       }
     },
     mutations: {
@@ -85,6 +91,7 @@ async function start() {
         name: '', // название модели
         positionZ: 0,
         dialogVisible: false,
+        kitName: '',
       }
     },
 
@@ -129,7 +136,10 @@ async function start() {
       },
 
       modelWidth() {
-        return Math.min(window?.innerWidth - 16 || 800, 1440);
+        // Math.min(window?.innerWidth - 16 || 800, 1440)
+        const span24 = Math.min(window?.innerWidth - 22, 1440);
+        if (span24 < 720) return span24;
+        return span24 * 2/3;
       },
       modelHeight() {
         return window?.innerHeight * 0.62;
@@ -137,6 +147,24 @@ async function start() {
 
       presets() {
         return this.model?.presets;
+      },
+
+      kits() {
+        return config.kits;
+      },
+
+      kit() {
+        const kit = config.kits.find(el => el.name === this.kitName);
+        if (!kit) return;
+        const items = kit.items.map(item => {
+          const model = config.models.find(el => el.name === item.model);
+          const preset = model?.presets?.find(m => m.id === item.id);
+          preset.name = this.modelOptions.find(m => m.value === item.model)?.label + ': ' + this.t(preset, 'name')
+          if (!preset) isValid = false;
+          preset.params.model = item.model;
+          return {...preset, model: item.model};
+        });
+        return {...kit, items};
       },
 
       paramsInputs() {
@@ -153,6 +181,15 @@ async function start() {
           .map(k => esc(k) + '=' + esc(this.stlParams[k]))
           .join('&');
         return '/api/downloadStl?' + query;
+      },
+
+      downloadkitUrl() {
+        const esc = encodeURIComponent;
+        const params = { name: this.kitName };
+        const query = Object.keys(params)
+          .map(k => esc(k) + '=' + esc(params[k]))
+          .join('&');
+        return '/api/downloadkit?' + query;
       },
 
       metaInfo() {
@@ -179,14 +216,41 @@ async function start() {
         return el[field];
       },
 
-      async saveStl() {
-        this.params = {...this.params, name: this.name};
-        if (!this.params.model) return;
+      paramAbr(name) {
+        let abr = name;
+        const abrMap = {
+          part: 'P',
+          inner: 'In',
+          height: 'H',
+          diam: 'D',
+          wall: 'W',
+        };
+
+        for (let fullName in abrMap) {
+          const shortName = abrMap[fullName];
+          const reg = new RegExp(fullName, 'g');
+          abr = abr.replace(reg, shortName);
+          // console.log("name:", name);
+          // console.log("fullName:", fullName);
+          // console.log("shortName:", shortName);
+        }
+        console.log(`${name} -> ${abr}`);
+        return abr;
+      },
+
+      async saveStl(params) {
+        if (!params) params = this.params;
+        params = {...params, name: this.name};
+        this.params = params;
+        if (params.model && params.model !== this.modelName) this.modelName = params.model;
+        if (!params.model) params.model = this.modelName; // TODO: запутался, тут лишние проверки модели туда-сюда
+        if (!params.model) return;
         this.setUrlFromParams();
 
         this.statusText = 'Generating SCAD -> STL...';
-        const answer = await axios.post('/api/getStl', this.params);
+        const answer = await axios.post('/api/getStl', params);
         this.statusText = '';
+        this.errorText = '';
 
         if (!answer.data) return;
 
@@ -198,7 +262,7 @@ async function start() {
 
         if (!answer.data.stlPath) return;
 
-        this.stlParams = {...this.params};
+        this.stlParams = {...params};
         this.stlMeta = answer.data;
         this.stlUrl = answer.data.stlPath + '?mt=' + Date.now();
       },
@@ -241,10 +305,7 @@ async function start() {
 
       setPreset(p) {
         this.name = this.t(p, 'name');
-        for (let name in p.params) {
-          this.params[name] = p.params[name];
-        }
-        this.saveStl();
+        this.saveStl(p.params);
       },
     }
   });

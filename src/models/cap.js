@@ -74,6 +74,7 @@ module.exports = {
     {
       name: 'For small cup',
       name_ru: 'Под маленькую баночку',
+      id: 'for_small_cup',
       params: {
         wall: 0.8,
         height: 3,
@@ -85,6 +86,7 @@ module.exports = {
     {
       name: 'For small funnel',
       name_ru: 'Под маленькую воронку',
+      id: 'for_small_funnel',
       params: {
         wall: 0.8,
         height: 3,
@@ -96,6 +98,7 @@ module.exports = {
     {
       name: 'Connector for big funnel',
       name_ru: 'Соединитель большой воронки',
+      id: 'connector_for_big_funnel',
       params: {
         wall: 1,
         height: 15,
