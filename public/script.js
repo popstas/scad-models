@@ -45,7 +45,7 @@ async function start() {
       stlUrl: '',
       stlParams: {},
       gridSize: 31,
-      lang: window.navigator.language === 'ru' ? 'ru' : 'en',
+      lang: ['ru', 'ru-RU'].includes(window.navigator.language) ? 'ru' : 'en',
       s: {
         step1: '1. Select model',
         step1_ru: '1. Найдите модель',
