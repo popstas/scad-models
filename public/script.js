@@ -30,7 +30,7 @@ async function start() {
   const config = result.data;
 
   const router = new VueRouter({mode: 'history'});
-  const persistentFields = ['params', 'stlUrl', 'gridSize', 'lang'];
+  const persistentFields = ['params', 'stlUrl', 'stlParams', 'gridSize', 'lang'];
   const computedFields = ['modelName', 's'];
 
   const store = new Vuex.Store({
@@ -43,6 +43,7 @@ async function start() {
       params: {},
       modelName: '',
       stlUrl: '',
+      stlParams: {},
       gridSize: 31,
       lang: window.navigator.language === 'ru' ? 'ru' : 'en',
       s: {
@@ -114,6 +115,15 @@ async function start() {
         return this.statusText !== '';
       },
 
+      // true when generated model match form params
+      isParamsGenerated() {
+        let match = true;
+        for (let name in this.stlParams) {
+          if (this.params[name] !== this.stlParams[name]) match = false;
+        }
+        return match;
+      },
+
       model() {
         return config.models.find(el => el.name === this.modelName);
       },
@@ -139,8 +149,8 @@ async function start() {
 
       downloadUrl() {
         const esc = encodeURIComponent;
-        const query = Object.keys(this.params)
-          .map(k => esc(k) + '=' + esc(this.params[k]))
+        const query = Object.keys(this.stlParams)
+          .map(k => esc(k) + '=' + esc(this.stlParams[k]))
           .join('&');
         return '/api/downloadStl?' + query;
       }
@@ -179,6 +189,7 @@ async function start() {
 
         if (!answer.data.stlPath) return;
 
+        this.stlParams = {...this.params};
         this.stlUrl = answer.data.stlPath + '?mt=' + Date.now();
       },
 

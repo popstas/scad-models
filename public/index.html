@@ -91,13 +91,13 @@
       <div class="step">
         <h3>{{ t(s, 'step3') }}:</h3>
         <div :class="{ processing: isProcess, actions: true}">
-          <el-button @click="saveStl" type="primary" v-html="t(s, 'generate_stl')"></el-button>
+          <el-button @click="saveStl" type="primary" :disabled="isParamsGenerated" v-html="t(s, 'generate_stl')"></el-button>
           <span class="statusText" v-html="statusText"></span>
           <span class="errorText" v-html="errorText"></span>
-          <a class="download-link" v-if="stlUrl" :href="downloadUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+          <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="downloadUrl"><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
           <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
-          <a class="download-link" v-if="stlUrl" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
-          <a class="download-link" v-if="stlUrl" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
+          <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="stlUrl.replace(/\.stl/, '.scad')">{{ t(s, 'scad_edit') }}</a>
+          <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
         </div>
       </div>
     </el-form>

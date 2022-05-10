@@ -114,6 +114,9 @@ footer {
   display: inline-block;
   padding: 0 3rem;
 }
+.link__changed {
+  opacity: 0.5;
+}
 
 .preset-link {
   text-decoration: none !important;
