@@ -92,6 +92,8 @@ async function start() {
         positionZ: 0,
         dialogVisible: false,
         kitName: '',
+        modelWidth: 0,
+        modelHeight: 0,
       }
     },
 
@@ -134,15 +136,8 @@ async function start() {
       model() {
         return config.models.find(el => el.name === this.modelName);
       },
-
-      modelWidth() {
-        // Math.min(window?.innerWidth - 16 || 800, 1440)
-        const span24 = Math.min(window?.innerWidth - 22, 1440);
-        if (span24 < 720) return span24;
-        return span24 * 2/3;
-      },
-      modelHeight() {
-        return window?.innerHeight * 0.62;
+      previewImg() {
+        return this.model?.preview;
       },
 
       presets() {
@@ -202,10 +197,20 @@ async function start() {
       }
     },
 
+    created() {
+      this.updateSizes();
+    },
+
     mounted() {
       this.setParamsFromUrl();
       if (!this.params.model) this.params.model = this.modelName; // TODO: possible it never happens
       if (!this.modelName) this.modelName = this.params.model;
+      this.updateSizes();
+
+      window.addEventListener("scroll", () => {
+        this.updateSizes();
+      }, { passive: true });
+
       setTimeout(this.saveStl, 100);
     },
 
@@ -214,6 +219,20 @@ async function start() {
         const langField = `${field}_${this.lang}`;
         if (el[langField]) return el[langField];
         return el[field];
+      },
+
+      getModelWidth() {
+        // Math.min(window?.innerWidth - 16 || 800, 1440)
+        const span24 = Math.min(window?.innerWidth - 22, 1440);
+        if (span24 < 720) return span24;
+        return span24 * 2/3;
+      },
+      getModelHeight() {
+        return window?.innerHeight * 0.8;
+      },
+      updateSizes() {
+        this.modelWidth = this.getModelWidth();
+        this.modelHeight = this.getModelHeight();
       },
 
       paramAbr(name) {
@@ -230,11 +249,7 @@ async function start() {
           const shortName = abrMap[fullName];
           const reg = new RegExp(fullName, 'g');
           abr = abr.replace(reg, shortName);
-          // console.log("name:", name);
-          // console.log("fullName:", fullName);
-          // console.log("shortName:", shortName);
         }
-        console.log(`${name} -> ${abr}`);
         return abr;
       },
 

@@ -111,9 +111,9 @@
           <!-- step 2 -->
           <div class="step">
             <h3>{{ t(s, 'step2') }}:</h3>
-            <div v-if="model.preview" class="model-preview">
+            <div v-if="previewImg" class="model-preview">
               <el-popover width="500" placement="right">
-                <img :src="model.preview"/>
+                <img :src="previewImg"/>
                 <el-link slot="reference">{{ t(s, 'scheme') }}</el-link>
               </el-popover>
             </div>
