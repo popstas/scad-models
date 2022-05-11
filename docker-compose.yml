@@ -1,0 +1,12 @@
+version: '2.1'
+
+services:
+  app:
+    image: popstas/3d-models
+    build: .
+    volumes:
+      - ./data:/home/node/code/data
+      - ./config.js:/home/node/code/config.js
+#      - .:/home/node/code
+    ports:
+      - "3014:3014"
