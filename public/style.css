@@ -13,17 +13,15 @@ h2 {
 }
 .step h3 {
   color: #ccc;
-  margin: 0 0 -15px;
+  margin: 0;
 }
 .step:hover h3 {
   color: #333;
 }
 @media (max-width: 720px) {
-  .step-1 {
-    text-align: right;
-  }
   .step-1 h3 {
     padding-top: 40px;
+    text-align: right;
   }
 }
 
@@ -40,6 +38,7 @@ a:hover {
   margin-left: 10px;
 }
 
+
 footer {
   position: fixed;
   bottom: 5px;
@@ -54,6 +53,7 @@ footer {
   right: 7px;
   top: 5px;
   opacity: 0.5;
+  z-index: 2;
 }
 .lang-select:hover {
   opacity: 1;
@@ -82,11 +82,11 @@ footer {
 }
 .form-model-item {
   display: inline-block;
-  margin: 0 0 1rem;
+  margin: 0;
 }
 @media (max-width: 720px) {
   .form-model-item {
-    margin-top: -11px;
+    /*margin-top: -11px;*/
   }
 }
 /*.form-params {
@@ -148,6 +148,10 @@ footer {
     width: 33vw;
     height: 33vw;
   }
+  .stl-preview-mobile img{
+    max-width: 100%;
+    height: auto;
+  }
 }
 .download-link {
   line-height: 3rem;
@@ -165,7 +169,7 @@ footer {
   margin-left: 4px;
   cursor: pointer;
 }
-.preset-link:hover {
+.preset-link:hover, .preset-link__active {
   text-shadow: 0 0 3px;
 }
 @media (max-width: 720px) {
@@ -193,3 +197,34 @@ footer {
 .el-input {
   margin-bottom: 1rem;
 }*/
+
+.presets-list {
+}
+.model-list {
+  margin: 30px auto 0;
+  max-width: 600px;
+}
+.model-item {
+  /*margin: 3px;*/
+}
+.model-card {
+  margin: 5px;
+  padding: 5px;
+  background: #ededed;
+  min-height: 2rem;
+}
+.model-item .el-link{
+  display: block;
+  margin-bottom: 5px;
+  border: none !important;
+  text-decoration: none !important;
+}
+.el-link.active {
+  font-weight: bold;
+}
+
+.model-image img {
+  max-width: 100%;
+  width: 300px;
+  height: auto;
+}

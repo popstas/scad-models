@@ -94,6 +94,7 @@ async function start() {
         kitName: '',
         modelWidth: 0,
         modelHeight: 0,
+        showScheme: false,
       }
     },
 
@@ -229,6 +230,7 @@ async function start() {
         return span24 * 2/3;
       },
       getModelHeight() {
+        if (window?.innerWidth > 720) return window?.innerHeight * 0.98;
         return window?.innerHeight * 0.8;
       },
       updateSizes() {

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const { execSync } = require('child_process');
+const { exec, execSync } = require('child_process');
 const config = require('../config');
 const models = require('./models');
 const NodeStl = require('node-stl');
@@ -11,6 +11,7 @@ const AdmZip = require('adm-zip');
 start();
 
 function start() {
+  fs.mkdirSync(config.cachePath, { recursive: true });
   initExpress();
 }
 
@@ -35,6 +36,33 @@ function getStlFromScad(pathScad) {
   return pathStl;
 }
 
+function buildPngFromScad(pathScad) {
+  const pathPng = pathScad.replace(/\.scad$/, '.png');
+  if (fs.existsSync(pathPng)) {
+    console.log("png cached:", pathPng);
+    return pathPng;
+  }
+
+  const args = [
+    'xvfb-run -a openscad',
+    '--imgsize 300,300 --render 100',
+    `"${pathScad}" -o "${pathPng}"`,
+  ]
+  const cmd = args.join(' ');
+
+  console.log("generate png...");
+  // console.log("cmd:", cmd);
+  exec(cmd, (err, stdout, stderr) => {
+    if (!err) console.log(`Saved to ${pathPng}`);
+    else {
+      console.log("err:", err);
+      console.log("stdout:", stdout);
+      console.log("stderr:", stderr);
+    }
+  });
+  return pathPng;
+}
+
 function initExpress() {
   const app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -48,6 +76,12 @@ function initExpress() {
       const m = {...models[name]};
       delete(m.generator);
       conf.models.push(m);
+      
+      for (let p of m.presets) {
+        const pathScad = getScadPath({model: m.name, ...p.params});
+        const pathPng = pathScad.replace(/\.scad$/, '.png');
+        p.image = pathPng.replace('./data', 'models')
+      }
     }
     conf.kits = config.kits || [];
     res.json(conf);
@@ -80,7 +114,9 @@ function initExpress() {
       return;
     }
 
+    const pathPng = buildPngFromScad(pathScad);
     const pathStl = getStlFromScad(pathScad);
+
 
     if (!pathStl) {
       res.json({ error: 'Failed to convert SCAD to STL'});
@@ -92,6 +128,7 @@ function initExpress() {
 
     res.json({
       stlPath,
+      image: pathPng,
       volume: stl.volume,
       weight : stl.weight,
       box : stl.boundingBox,
@@ -187,7 +224,7 @@ function saveModel(params) {
     return cachedPath;
   }
 
-  const filePath = getModelPath(params);
+  const filePath = getScadPath(params);
 
   console.log("Generate...");
   const output = generator(params);
@@ -240,14 +277,14 @@ function getFilename(params) {
   return filename;
 }
 
-function getModelPath(params) {
+function getScadPath(params) {
   const key = getCacheKey(params);
   return `${config.cachePath}/${key}.scad`;
 }
 
 function getCacheModel(params) {
   if(!config.cache_enabled) return false;
-  const filePath = getModelPath(params);
+  const filePath = getScadPath(params);
   if (fs.existsSync(filePath)) {
     return filePath;
   }

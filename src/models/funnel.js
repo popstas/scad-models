@@ -140,7 +140,7 @@ module.exports = {
       id: 'big_to_med',
       params: {
         wall: 1,
-        part1_diam: 34.4,
+        part1_diam: 34.1,
         part3_diam: 21,
         part1_height: 5,
         part2_height: 20,
