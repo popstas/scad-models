@@ -102,18 +102,21 @@
             </el-select>
           </el-form-item>
 
-          <!-- presets list -->
-          <el-row v-if="modelName" class="presets-list items-list">
-            <el-col :xs="12" :md="12" class="model-item" v-for="p of presets">
-              <div class="model-card">
-                <el-link :class="{'model-title': true, active: name === t(p, 'name')}" v-html="t(p, 'name')"
-                         @click.prevent="setPreset(p)"></el-link>
-                <el-link class="model-image" @click.prevent="setPreset(p)">
-                  <img v-if="p.image" :src="p.image"/>
-                </el-link>
-              </div>
-            </el-col>
-          </el-row>
+          <!-- presets select -->
+          <el-form-item class="form-preset-item" :label="t(s, 'preset')">
+            <el-select v-model="name" :placeholder="t(s, 'preset')" clearable @change="setPreset">
+              <el-option
+                v-for="item in presets"
+                :key="t(item, 'name')"
+                :label="t(item, 'name')"
+                :value="item">
+                <div>
+                  <img class="option-image" v-if="item.image" :src="item.image"/>
+                  <span class="option-item" v-html="t(item, 'name')"></span>
+                </div>
+              </el-option>
+            </el-select>
+          </el-form-item>
 
           <div class="kits">
             <el-form-item :label="t(s, 'or_select_kit')">
@@ -129,7 +132,24 @@
 
             <div v-if="kitName">
 
-              <el-row v-if="modelName" class="presets-list items-list">
+              <!-- presets select -->
+              <el-form-item class="form-kit-item" :label="t(s, 'kit_item')">
+                <el-select :placeholder="t(s, 'kit_item')" clearable
+                  @change="setPreset">
+                  <el-option
+                    v-for="item in kit.items"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item">
+                    <div>
+                      <img class="option-image" v-if="item.image" :src="item.image"/>
+                      <span class="option-item" v-html="item.name"></span>
+                    </div>
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
+              <!--<el-row v-if="modelName" class="presets-list items-list">
                 <el-col :xs="12" :md="12" class="model-item" v-for="p of kit.items">
                   <div class="model-card">
                     <el-link :class="{'model-title': true, active: name === t(p, 'name')}" v-html="t(p, 'name')"
@@ -139,17 +159,20 @@
                     </el-link>
                   </div>
                 </el-col>
-              </el-row>
+              </el-row>-->
 
-              <ul class="presets presets__list">
+              <!--<ul class="presets presets__list">
                 <li v-for="p of kit.items" :key="p.name">
                   <a :class="{'preset-link': true, 'preset-link__active': name == t(p, 'name')}"
                      v-html="p.name"
                      @click.prevent="setPreset(p)"
                   ></a>
                 </li>
-              </ul>
-              <a :class="{'download-link': true}" :href="downloadkitUrl"><i class="el-icon-download"></i> ZIP</a>
+              </ul>-->
+
+              <el-form-item>
+                <a :class="{'download-link': true}" :href="downloadkitUrl"><i class="el-icon-download"></i> ZIP</a>
+              </el-form-item>
             </div>
           </div>
         </div>

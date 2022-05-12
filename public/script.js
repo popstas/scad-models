@@ -65,8 +65,12 @@ async function start() {
         about_ru: 'Я часто печатаю одни и те же базовые модели, только меняю размеры в модели.<br/> Этот сайт нужен, чтобы ускорить создание таких моделей.',
         model: 'Model',
         model_ru: 'Модель',
+        preset: 'Preset',
+        preset_ru: 'Пресет',
         kit: 'Kit',
         kit_ru: 'Набор',
+        kit_item: 'Kit item',
+        kit_item_ru: 'Деталь набора',
         or_select_kit: 'Or select Kit:',
         or_select_kit_ru: 'Или выберите набор:',
         scheme: 'Scheme',
@@ -107,7 +111,7 @@ async function start() {
       },
       stlUrl() {
         this.positionZ = 0; // reset before new model load, for correct center
-      }
+      },
     },
 
     computed: {
