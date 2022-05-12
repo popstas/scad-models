@@ -7,21 +7,21 @@ function generator(params) {
   const inner2_height = parseFloat(params.inner2_height);
   const wall = parseFloat(params.wall);
 
-  const bottomPart = cylinder(lid_height, inner_diam, {center: false})
-    .translate([ 0, 0, 0 ]);
+  const bottomPart = cylinder(lid_height, inner_diam, { center: false })
+    .translate([0, 0, 0]);
 
   const outGap = 0.05; // for better fit
   const inGap = 0.02; // -0.05 - too hard;
 
   const borderOuter = difference(
-    cylinder(height, inner_diam + outGap + wall, {center: false}),
-    cylinder(height, inner_diam + outGap, {center: false}),
-  ).translate([ 0, 0, 0 ]);
+    cylinder(height, inner_diam + outGap + wall, { center: false }),
+    cylinder(height, inner_diam + outGap, { center: false }),
+  ).translate([0, 0, 0]);
 
   const borderInner = difference(
-    cylinder(inner2_height, inner_diam - inGap - wall, {center: false}),
-    cylinder(inner2_height, inner_diam - inGap - wall*2, {center: false}),
-  ).translate([ 0, 0, 0 ]);
+    cylinder(inner2_height, inner_diam - inGap - wall, { center: false }),
+    cylinder(inner2_height, inner_diam - inGap - wall * 2, { center: false }),
+  ).translate([0, 0, 0]);
 
   return union(
     bottomPart,

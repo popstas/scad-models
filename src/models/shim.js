@@ -6,11 +6,9 @@ function generator(params) {
   const wall = parseFloat(params.wall);
 
   return difference(
-    cylinder(wall, outer, {center: false}),
-    cylinder(wall, inner, {center: false}),
-  )
-    // .translate([0, 0, 0])
-    // .rotate([0, 0, 0]);
+    cylinder(wall, outer, { center: false }),
+    cylinder(wall, inner, { center: false }),
+  );
 }
 
 module.exports = {
@@ -19,6 +17,7 @@ module.exports = {
   label: 'Shim',
   label_ru: 'Шайба',
   preview: '/previews/shim.png',
+
   params: [
     {
       label: 'Wall Thickness',
@@ -53,4 +52,4 @@ module.exports = {
       }
     },
   ],
-}
+};

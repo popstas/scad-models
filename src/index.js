@@ -25,13 +25,13 @@ function getStlFromScad(pathScad) {
     try {
       execSync(`openscad "${pathScad}" -o "${pathStl}"`);
       console.log(`Saved to ${pathStl}`);
-    } catch(e) {
-      console.log("error while convert SCAD to STL:");
-      console.log("e.stderr:", e.stderr);
+    } catch (e) {
+      console.log('error while convert SCAD to STL:');
+      console.log('e.stderr:', e.stderr);
       return false;
     }
   } else {
-    console.log("Use cached STL");
+    console.log('Use cached STL');
   }
   return pathStl;
 }
@@ -39,7 +39,7 @@ function getStlFromScad(pathScad) {
 function buildPngFromScad(pathScad) {
   const pathPng = pathScad.replace(/\.scad$/, '.png');
   if (fs.existsSync(pathPng)) {
-    console.log("png cached:", pathPng);
+    console.log('png cached:', pathPng);
     return pathPng;
   }
 
@@ -47,17 +47,17 @@ function buildPngFromScad(pathScad) {
     'xvfb-run -a openscad',
     '--imgsize 300,300 --render 100',
     `"${pathScad}" -o "${pathPng}"`,
-  ]
+  ];
   const cmd = args.join(' ');
 
-  console.log("generate png...");
+  console.log('generate png...');
   // console.log("cmd:", cmd);
   exec(cmd, (err, stdout, stderr) => {
     if (!err) console.log(`Saved to ${pathPng}`);
     else {
-      console.log("err:", err);
-      console.log("stdout:", stdout);
-      console.log("stderr:", stderr);
+      console.log('err:', err);
+      console.log('stdout:', stdout);
+      console.log('stderr:', stderr);
     }
   });
   return pathPng;
@@ -71,21 +71,21 @@ function initExpress() {
   // config.json
   app.get('/config.json', (_req, res) => {
     // const conf = {...config};
-    const conf = {models: []};
+    const conf = { models: [] };
     for (let name in models) {
-      const m = {...models[name]};
-      delete(m.generator);
+      const m = { ...models[name] };
+      delete (m.generator);
       conf.models.push(m);
-      
+
       for (let p of m.presets) {
-        const pathScad = getScadPath({model: m.name, ...p.params});
+        const pathScad = getScadPath({ model: m.name, ...p.params });
         const pathPng = pathScad.replace(/\.scad$/, '.png');
-        p.image = pathPng.replace('./data', 'models')
+        p.image = pathPng.replace('./data', 'models');
       }
     }
     conf.kits = config.kits || [];
     res.json(conf);
-  })
+  });
 
   app.get('/api/downloadStl', (req, res) => {
     // if (req.query.cache === '0') // TODO:
@@ -101,8 +101,8 @@ function initExpress() {
     res.setHeader('Content-Transfer-Encoding', 'binary');
     res.setHeader('Content-Type', 'application/octet-stream');
 
-    res.sendFile(path.resolve(stlPath))
-  })
+    res.sendFile(path.resolve(stlPath));
+  });
 
   app.use('/', express.static('public'));
 
@@ -111,28 +111,27 @@ function initExpress() {
   app.post('/api/getStl', async (req, res) => {
     const pathScad = saveModel(req.body);
     if (!pathScad || pathScad?.error) {
-      res.json({ error: 'Failed: ' + pathScad?.error});
+      res.json({ error: 'Failed: ' + pathScad?.error });
       return;
     }
 
     const pathPng = buildPngFromScad(pathScad);
     const pathStl = getStlFromScad(pathScad);
 
-
     if (!pathStl) {
-      res.json({ error: 'Failed to convert SCAD to STL'});
+      res.json({ error: 'Failed to convert SCAD to STL' });
       return;
     }
 
     const stlPath = pathStl.replace('./data', 'models');
-    const stl = new NodeStl(pathStl, { density: config.material.density});
+    const stl = new NodeStl(pathStl, { density: config.material.density });
 
     res.json({
       stlPath,
       image: pathPng,
       volume: stl.volume,
-      weight : stl.weight,
-      box : stl.boundingBox,
+      weight: stl.weight,
+      box: stl.boundingBox,
     });
   });
 
@@ -155,10 +154,10 @@ function initExpress() {
       const items = kit.items.map(item => {
         const preset = models[item.model]?.presets?.find(m => m.id === item.id);
         if (!preset) isValid = false;
-        return {...preset, model: item.model};
+        return { ...preset, model: item.model };
       });
       if (!isValid) {
-        console.log("cannot find all models for kit:", kitName);
+        console.log('cannot find all models for kit:', kitName);
         res.end(404);
         return;
       }
@@ -166,7 +165,7 @@ function initExpress() {
       // Save to zip
       const zip = new AdmZip();
       for (let item of items) {
-        const pathScad = saveModel({...item.params, model: item.model});
+        const pathScad = saveModel({ ...item.params, model: item.model });
         if (!pathScad || pathScad?.error) {
           isValid = false;
           continue;
@@ -177,14 +176,14 @@ function initExpress() {
       }
       zip.writeZip(kitPath);
     } else {
-      console.log("Use cached kitPath:", kitPath);
+      console.log('Use cached kitPath:', kitPath);
     }
 
     res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(kitFilename));
     res.setHeader('Content-Transfer-Encoding', 'binary');
     res.setHeader('Content-Type', 'application/octet-stream');
 
-    res.sendFile(path.resolve(kitPath))
+    res.sendFile(path.resolve(kitPath));
   });
 
   app.listen(config.port, () => { console.log(`listen port ${config.port}`); });
@@ -204,7 +203,7 @@ function isParamsValid(params) {
 }
 
 function saveModel(params) {
-  console.log("saveModel");
+  console.log('saveModel');
   if (!isParamsValid(params)) {
     const msg = 'params not valid';
     console.log(msg);
@@ -221,13 +220,13 @@ function saveModel(params) {
 
   const cachedPath = getCacheModel(params);
   if (cachedPath) {
-    console.log("cachedPath:", cachedPath);
+    console.log('cachedPath:', cachedPath);
     return cachedPath;
   }
 
   const filePath = getScadPath(params);
 
-  console.log("Generate...");
+  console.log('Generate...');
   const output = generator(params);
   const rotated = output;//.rotate([180, 180, 0])
 
@@ -237,7 +236,7 @@ function saveModel(params) {
   // const filePath = './data/' + filename;
 
   fs.writeFileSync(filePath, rotated.serialize({ $fn: 100 }));
-  console.log("Saved to " + filePath);
+  console.log('Saved to ' + filePath);
   return filePath;
 }
 
@@ -273,7 +272,7 @@ function getFilename(params) {
     .replace(/part/g, 'p')
     .replace(/inner/g, 'in')
     .replace(/height/g, 'h')
-    .replace(/diam/g, 'd')
+    .replace(/diam/g, 'd');
   if (params.name) filename += `-${params.name}`;
   return filename;
 }
@@ -284,7 +283,7 @@ function getScadPath(params) {
 }
 
 function getCacheModel(params) {
-  if(!config.cache_enabled) return false;
+  if (!config.cache_enabled) return false;
   const filePath = getScadPath(params);
   if (fs.existsSync(filePath)) {
     return filePath;

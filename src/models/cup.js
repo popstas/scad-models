@@ -7,12 +7,12 @@ function generator(params) {
   const wall = parseFloat(params.wall); //0.8; //толщина стенок
 
   const topPart = difference(
-    cylinder(height, [bottom_diam, top_diam,], {center: false}),
-    cylinder(height, [bottom_diam - wall, top_diam - wall], {center: false}),
-  ).translate([ 0, 0, 0 ]);
+    cylinder(height, [bottom_diam, top_diam,], { center: false }),
+    cylinder(height, [bottom_diam - wall, top_diam - wall], { center: false }),
+  ).translate([0, 0, 0]);
 
-  const bottomPart = cylinder(wall, bottom_diam, {center: false})
-    .translate([ 0, 0, 0 ]);
+  const bottomPart = cylinder(wall, bottom_diam, { center: false })
+    .translate([0, 0, 0]);
 
   return union(
     topPart,
@@ -26,6 +26,7 @@ module.exports = {
   label: 'Cup / Jar',
   label_ru: 'Чашка / банка',
   preview: '/previews/cup.png',
+
   params: [
     {
       label: 'Wall Thickness',
@@ -56,6 +57,7 @@ module.exports = {
       default: 10,
     },
   ],
+
   presets: [
     {
       name: 'Small cup',
@@ -80,4 +82,4 @@ module.exports = {
       }
     },
   ],
-}
+};

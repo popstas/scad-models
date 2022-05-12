@@ -8,16 +8,20 @@ h2 {
   font-size: 28px;
   margin-top: 0;
 }
+
 .step {
   min-height: 70px;
 }
+
 .step h3 {
   color: #ccc;
   margin: 0;
 }
+
 .step:hover h3 {
   color: #333;
 }
+
 @media (max-width: 720px) {
   .step-1 h3 {
     padding-top: 40px;
@@ -30,6 +34,7 @@ a {
   text-decoration: none;
   cursor: pointer;
 }
+
 a:hover {
   text-decoration: underline;
 }
@@ -44,6 +49,7 @@ footer {
   bottom: 5px;
   right: 5px;
 }
+
 .kits {
   margin: 7px 3px;
 }
@@ -55,6 +61,7 @@ footer {
   opacity: 0.5;
   z-index: 2;
 }
+
 .lang-select:hover {
   opacity: 1;
 }
@@ -64,6 +71,7 @@ footer {
   width: 32px;
   height: 32px;
 }
+
 .option-item {
   display: inline-block;
   line-height: 32px;
@@ -74,21 +82,26 @@ footer {
   /*max-width: 1440px;*/
   margin: 0 auto;
 }
+
 .el-form-item {
   margin-bottom: 10px;
 }
+
 .el-button {
   margin-top: 10px;
 }
+
 .form-model-item {
   display: inline-block;
   margin: 0;
 }
+
 @media (max-width: 720px) {
   .form-model-item {
     /*margin-top: -11px;*/
   }
 }
+
 /*.form-params {
   columns: 1;
 }
@@ -112,11 +125,13 @@ footer {
   display: inline-block;
   margin: 0;
 }
+
 .presets__list {
   list-style: decimal inside;
   padding: 0;
   line-height: 1.5rem;
 }
+
 .model-preview {
   margin: -8px 0 8px 318px;
   /*max-width: 400px;
@@ -128,6 +143,7 @@ footer {
     /*display: block;*/
     /*text-align: right;*/
   }
+
   .presets__list {
     list-style: disc;
     margin-left: 21px;
@@ -138,9 +154,11 @@ footer {
   margin-top: 15px;
   text-align: center;
 }
+
 .stl-preview-mobile {
   display: none;
 }
+
 @media (max-width: 640px) {
   .stl-preview-mobile {
     display: inline-block;
@@ -148,16 +166,19 @@ footer {
     width: 33vw;
     height: 33vw;
   }
-  .stl-preview-mobile img{
+
+  .stl-preview-mobile img {
     max-width: 100%;
     height: auto;
   }
 }
+
 .download-link {
   line-height: 3rem;
   display: inline-block;
   padding: 0 1.5rem;
 }
+
 .link__changed {
   opacity: 0.5;
 }
@@ -169,9 +190,11 @@ footer {
   margin-left: 4px;
   cursor: pointer;
 }
+
 .preset-link:hover, .preset-link__active {
   text-shadow: 0 0 3px;
 }
+
 @media (max-width: 720px) {
   .preset-link {
     display: list-item;
@@ -185,6 +208,7 @@ footer {
 .model-stl {
   margin-top: -15px;
 }
+
 @media (min-width: 720px) {
   .model-stl {
     position: fixed;
@@ -196,6 +220,7 @@ footer {
 .actions {
   margin-top: 1rem;
 }
+
 .actions.processing {
   opacity: 0.5;
 }
@@ -207,26 +232,31 @@ footer {
 
 .presets-list {
 }
+
 .model-list {
   margin: 30px auto 0;
   max-width: 600px;
 }
+
 .model-item {
   /*margin: 3px;*/
 }
+
 .model-card {
   margin: 5px;
   padding: 5px;
   background: #ededed;
   min-height: 2rem;
 }
-.model-item .el-link{
+
+.model-item .el-link {
   display: block;
   margin-bottom: 5px;
   min-height: 2rem;
   border: none !important;
   text-decoration: none !important;
 }
+
 .el-link.active {
   font-weight: bold;
 }

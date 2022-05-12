@@ -25,229 +25,238 @@
   <link rel="stylesheet" href="style.css?v=1">
 </head>
 <body>
-  
-  <div id="app">
-    <el-dialog
-      title="SCAD Models"
-      :width="'80%'"
-      :visible.sync="dialogVisible"
-    >
-      <p v-html="t(s, 'about')"></p>
-      <p><a href="https://github.com/popstas/scad-models" target="_blank">https://github.com/popstas/scad-models</a></p>
-    </el-dialog>
 
-    <div class="lang-select">
-      <el-radio-group v-model="lang" size="small">
-        <el-radio-button label="en"></el-radio-button>
-        <el-radio-button label="ru"></el-radio-button>
-      </el-radio-group>
-    </div>
+<div id="app">
+  <el-dialog
+    title="SCAD Models"
+    :width="'80%'"
+    :visible.sync="dialogVisible"
+  >
+    <p v-html="t(s, 'about')"></p>
+    <p><a href="https://github.com/popstas/scad-models" target="_blank">https://github.com/popstas/scad-models</a></p>
+  </el-dialog>
 
-    <!-- model list -->
-    <el-row v-if="!modelName" class="model-list items-list">
-      <el-col :xs="12" :md="12" class="model-item" v-for="model of modelOptions">
-        <div class="model-card">
-          <el-link class="model-title" v-html="t(model, 'label')" :href="'/?model=' + model.value"></el-link>
-          <!--<router-link class="model-image" :to="'/?model=' + model.value">
-          </router-link>-->
-          <el-link class="model-image" :href="'/?model=' + model.value">
-            <img v-if="model.image"  :src="model.image" />
-          </el-link>
+  <div class="lang-select">
+    <el-radio-group v-model="lang" size="small">
+      <el-radio-button label="en"></el-radio-button>
+      <el-radio-button label="ru"></el-radio-button>
+    </el-radio-group>
+  </div>
+
+  <!-- model list -->
+  <el-row v-if="!modelName" class="model-list items-list">
+    <el-col :xs="12" :md="12" class="model-item" v-for="model of modelOptions">
+      <div class="model-card">
+        <el-link class="model-title" v-html="t(model, 'label')" :href="'/?model=' + model.value"></el-link>
+        <!--<router-link class="model-image" :to="'/?model=' + model.value">
+        </router-link>-->
+        <el-link class="model-image" :href="'/?model=' + model.value">
+          <img v-if="model.image" :src="model.image"/>
+        </el-link>
+      </div>
+    </el-col>
+  </el-row>
+
+  <el-form v-if="modelName" label-width="190px" :model="params">
+    <!-- main row -->
+    <el-row class="main-row">
+
+      <!-- left col -->
+      <el-col :sm="24" :md="8">
+
+        <!-- stl mobile preview -->
+        <div class="stl-preview-mobile" v-loading="isProcess">
+          <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
+          <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
+          <img v-if="!stlUrl && previewImg" :src="previewImg"/>
+          <model-stl v-if="stlUrl" ref="stlMobile"
+                     :src="stlUrl"
+                     :background-color="0xefefef"
+                     :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
+                     :position="{x: 0, y: 0, z: positionZ}"
+                     :camera-position="{x: 0, y: 80, z: 50}"
+                     :camera-rotation="{x: 0, y: 0, z: 0}"
+                     :scale="{x: 0.5, y: 0.5, z: 0.5}"
+                     :width="150"
+                     :height="150"
+                     @on-load="onStlLoad"
+          />
         </div>
-      </el-col>
-    </el-row>
 
-    <el-form v-if="modelName" label-width="190px" :model="params">
-      <!-- main row -->
-      <el-row class="main-row">
+        <!-- step 1, select model -->
+        <div class="step step-1">
+          <h3>{{ t(s, 'step1') }}:</h3>
 
-        <!-- left col -->
-        <el-col :sm="24" :md="8">
+          <el-form-item class="form-model-item">
+            <el-select v-model="modelName" :placeholder="t(s, 'model')" clearable>
+              <el-option
+                v-for="item in modelOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                <div>
+                  <img class="option-image" v-if="item.image" :src="item.image"/>
+                  <span class="option-item" v-html="item.label"></span>
+                </div>
+              </el-option>
+            </el-select>
+          </el-form-item>
 
-          <!-- stl mobile preview -->
-          <div class="stl-preview-mobile" v-loading="isProcess">
-            <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
-            <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
-            <img v-if="!stlUrl && previewImg" :src="previewImg"/>
-            <model-stl v-if="stlUrl" ref="stlMobile"
-                       :src="stlUrl"
-                       :background-color="0xefefef"
-                       :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
-                       :position="{x: 0, y: 0, z: positionZ}"
-                       :camera-position="{x: 0, y: 80, z: 50}"
-                       :camera-rotation="{x: 0, y: 0, z: 0}"
-                       :scale="{x: 0.5, y: 0.5, z: 0.5}"
-                       :width="150"
-                       :height="150"
-                       @on-load="onStlLoad"
-            />
-          </div>
+          <!-- presets list -->
+          <el-row v-if="modelName" class="presets-list items-list">
+            <el-col :xs="12" :md="12" class="model-item" v-for="p of presets">
+              <div class="model-card">
+                <el-link :class="{'model-title': true, active: name === t(p, 'name')}" v-html="t(p, 'name')"
+                         @click.prevent="setPreset(p)"></el-link>
+                <el-link class="model-image" @click.prevent="setPreset(p)">
+                  <img v-if="p.image" :src="p.image"/>
+                </el-link>
+              </div>
+            </el-col>
+          </el-row>
 
-          <!-- step 1, select model -->
-          <div class="step step-1">
-            <h3>{{ t(s, 'step1') }}:</h3>
-
-            <el-form-item class="form-model-item">
-              <el-select v-model="modelName" :placeholder="t(s, 'model')" clearable>
+          <div class="kits">
+            <el-form-item :label="t(s, 'or_select_kit')">
+              <el-select v-model="kitName" clearable :placeholder="t(s, 'kit')">
                 <el-option
-                        v-for="item in modelOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                  <div>
-                    <img class="option-image" v-if="item.image" :src="item.image"/>
-                    <span class="option-item" v-html="item.label"></span>
-                  </div>
+                  v-for="item in kits"
+                  :key="item.name"
+                  :label="t(item, 'name')"
+                  :value="item.name">
                 </el-option>
               </el-select>
             </el-form-item>
 
-            <!-- presets list -->
-            <el-row v-if="modelName" class="presets-list items-list">
-              <el-col :xs="12" :md="12" class="model-item" v-for="p of presets">
-                <div class="model-card">
-                  <el-link :class="{'model-title': true, active: name === t(p, 'name')}" v-html="t(p, 'name')"
-                           @click.prevent="setPreset(p)"></el-link>
-                  <el-link class="model-image" @click.prevent="setPreset(p)">
-                    <img v-if="p.image"  :src="p.image" />
-                  </el-link>
-                </div>
-              </el-col>
-            </el-row>
+            <div v-if="kitName">
 
-            <div class="kits">
-              <el-form-item :label="t(s, 'or_select_kit')">
-                <el-select v-model="kitName" clearable :placeholder="t(s, 'kit')">
-                  <el-option
-                          v-for="item in kits"
-                          :key="item.name"
-                          :label="t(item, 'name')"
-                          :value="item.name">
-                  </el-option>
-                </el-select>
-              </el-form-item>
+              <el-row v-if="modelName" class="presets-list items-list">
+                <el-col :xs="12" :md="12" class="model-item" v-for="p of kit.items">
+                  <div class="model-card">
+                    <el-link :class="{'model-title': true, active: name === t(p, 'name')}" v-html="t(p, 'name')"
+                             @click.prevent="setPreset(p)"></el-link>
+                    <el-link class="model-image" @click.prevent="setPreset(p)">
+                      <img v-if="p.image" :src="p.image"/>
+                    </el-link>
+                  </div>
+                </el-col>
+              </el-row>
 
-              <div v-if="kitName">
-
-                <el-row v-if="modelName" class="presets-list items-list">
-                  <el-col :xs="12" :md="12" class="model-item" v-for="p of kit.items">
-                    <div class="model-card">
-                      <el-link :class="{'model-title': true, active: name === t(p, 'name')}" v-html="t(p, 'name')"
-                               @click.prevent="setPreset(p)"></el-link>
-                      <el-link class="model-image" @click.prevent="setPreset(p)">
-                        <img v-if="p.image"  :src="p.image" />
-                      </el-link>
-                    </div>
-                  </el-col>
-                </el-row>
-
-                <ul class="presets presets__list">
-                  <li v-for="p of kit.items" :key="p.name">
-                    <a :class="{'preset-link': true, 'preset-link__active': name == t(p, 'name')}"
-                       v-html="p.name"
-                       @click.prevent="setPreset(p)"
-                    ></a>
-                  </li>
-                </ul>
-                <a :class="{'download-link': true}" :href="downloadkitUrl"><i class="el-icon-download"></i> ZIP</a>
-              </div>
+              <ul class="presets presets__list">
+                <li v-for="p of kit.items" :key="p.name">
+                  <a :class="{'preset-link': true, 'preset-link__active': name == t(p, 'name')}"
+                     v-html="p.name"
+                     @click.prevent="setPreset(p)"
+                  ></a>
+                </li>
+              </ul>
+              <a :class="{'download-link': true}" :href="downloadkitUrl"><i class="el-icon-download"></i> ZIP</a>
             </div>
           </div>
+        </div>
 
-          <!-- step 2 -->
-          <div class="step" v-if="name || stlUrl">
-            <h3>{{ t(s, 'step2') }}:</h3>
-            <div v-if="previewImg" class="model-preview">
-              <el-popover width="500" placement="right"
-                @show="showScheme = true" @hide="showScheme = false">
-                <img :src="previewImg"/>
-                <el-link slot="reference">{{ t(s, 'scheme') }}</el-link>
-              </el-popover>
-            </div>
-
-            <el-form-item v-for="item of paramsInputs" :key="item.name" :label="t(item, 'label') + (showScheme ? `, ${paramAbr(item.name)}` : '')">
-              <el-input-number v-if="item.type === 'input'" v-model="params[item.name]" :step="0.1"></el-input-number>
-            </el-form-item>
+        <!-- step 2 -->
+        <div class="step" v-if="name || stlUrl">
+          <h3>{{ t(s, 'step2') }}:</h3>
+          <div v-if="previewImg" class="model-preview">
+            <el-popover width="500" placement="right"
+                        @show="showScheme = true" @hide="showScheme = false">
+              <img :src="previewImg"/>
+              <el-link slot="reference">{{ t(s, 'scheme') }}</el-link>
+            </el-popover>
           </div>
 
-          <!-- step 3 -->
-          <div class="step" v-if="name || stlUrl">
-            <h3>{{ t(s, 'step3') }}:</h3>
-            <div :class="{ processing: isProcess, actions: true}">
-              <el-button @click="saveStl()" type="primary" :disabled="isParamsGenerated"
-                         v-html="t(s, 'generate_stl')"></el-button>
-              <span class="statusText" v-html="statusText"></span>
-              <span class="errorText" v-html="errorText"></span>
-              <a
-                :class="{
+          <el-form-item v-for="item of paramsInputs" :key="item.name"
+                        :label="t(item, 'label') + (showScheme ? `, ${paramAbr(item.name)}` : '')">
+            <el-input-number v-if="item.type === 'input'" v-model="params[item.name]" :step="0.1"></el-input-number>
+          </el-form-item>
+        </div>
+
+        <!-- step 3 -->
+        <div class="step" v-if="name || stlUrl">
+          <h3>{{ t(s, 'step3') }}:</h3>
+          <div :class="{ processing: isProcess, actions: true}">
+            <el-button @click="saveStl()" type="primary" :disabled="isParamsGenerated"
+                       v-html="t(s, 'generate_stl')"></el-button>
+            <span class="statusText" v-html="statusText"></span>
+            <span class="errorText" v-html="errorText"></span>
+            <a
+              :class="{
                   'download-link': true,
                   'link__changed': !isParamsGenerated,
                   'el-button': isParamsGenerated,
                   'el-button--success': isParamsGenerated
                 }"
-                style="margin-top:10px"
-                v-if="stlUrl"
-                :href="downloadUrl"
-              ><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
-              <div class="download-link">
-                <span v-if="metaInfo" v-html="metaInfo"></span>
-              </div><br />
-              <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
-              <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="currentUrl"><i class="el-icon-share"></i> {{ t(s, 'link') }}</a>
-              <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :title="t(s, 'scad_edit')" :href="stlUrl.replace(/\.stl/, '.scad')">SCAD</a>
+              style="margin-top:10px"
+              v-if="stlUrl"
+              :href="downloadUrl"
+            ><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+            <div class="download-link">
+              <span v-if="metaInfo" v-html="metaInfo"></span>
             </div>
+            <br/>
+            <!--<a class="download-link" :href="stlUrl"><i class="el-icon-download"></i> Old</a>-->
+            <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl" :href="currentUrl"><i
+              class="el-icon-share"></i> {{ t(s, 'link') }}</a>
+            <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl"
+               :title="t(s, 'scad_edit')" :href="stlUrl.replace(/\.stl/, '.scad')">SCAD</a>
           </div>
-        </el-col>
+        </div>
+      </el-col>
 
-        <!-- main col -->
-        <el-col :sm="24" :md="16" class="model-stl">
-          <div class="stl-preview" v-loading="isProcess">
-            <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
-            <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
-            <model-stl ref="stl"
-                       :src="stlUrl"
-                       :background-color="0xefefef"
-                       :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
-                       :position="{x: 0, y: 0, z: positionZ}"
-                       :camera-position="{x: 0, y: 80, z: 50}"
-                       :camera-rotation="{x: 0, y: 0, z: 0}"
-                       :scale="{x: 0.5, y: 0.5, z: 0.5}"
-                       :width="modelWidth"
-                       :height="modelHeight"
-                       @on-load="onStlLoad"
-            />
-          </div>
-        </el-col>
-      </el-row>
-    </el-form>
+      <!-- main col -->
+      <el-col :sm="24" :md="16" class="model-stl">
+        <div class="stl-preview" v-loading="isProcess">
+          <!--:rotation="{x: -Math.PI / 2, y: 0, z: 0}"-->
+          <!-- при camera-position.z = 100 размеры на моём экране совпадают с реальными -->
+          <model-stl ref="stl"
+                     :src="stlUrl"
+                     :background-color="0xefefef"
+                     :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
+                     :position="{x: 0, y: 0, z: positionZ}"
+                     :camera-position="{x: 0, y: 80, z: 50}"
+                     :camera-rotation="{x: 0, y: 0, z: 0}"
+                     :scale="{x: 0.5, y: 0.5, z: 0.5}"
+                     :width="modelWidth"
+                     :height="modelHeight"
+                     @on-load="onStlLoad"
+          />
+        </div>
+      </el-col>
+    </el-row>
+  </el-form>
 
-    <footer>
-      <a @click.prevent="dialogVisible = !dialogVisible">About</a>
-    </footer>
+  <footer>
+    <a @click.prevent="dialogVisible = !dialogVisible">About</a>
+  </footer>
 
-    <!--<div style="text-align: center">
-      <a :href="stlUrl">{{ this.stlUrl
-              .replace(/\?.*/, '').replace('models/', '').replace('cache/', '')
-              .replace(/__/g, ' — ')
-              .replace('.stl', '').replace(/[T]/g, ' — ').replace(/[Z]/g, '')
-              .replace(/\.\d+/, '').replace(/_/g, ':')}}</a>
-    </div>-->
-  </div>
+  <!--<div style="text-align: center">
+    <a :href="stlUrl">{{ this.stlUrl
+            .replace(/\?.*/, '').replace('models/', '').replace('cache/', '')
+            .replace(/__/g, ' — ')
+            .replace('.stl', '').replace(/[T]/g, ' — ').replace(/[Z]/g, '')
+            .replace(/\.\d+/, '').replace(/_/g, ':')}}</a>
+  </div>-->
+</div>
 
-  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript" >
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-      m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+  (function (m, e, t, r, i, k, a) {
+    m[i] = m[i] || function () {(m[i].a = m[i].a || []).push(arguments);};
+    m[i].l = 1 * new Date();
+    k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a);
+  })
+  (window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
 
-    ym(88740020, "init", {
-      clickmap:true,
-      trackLinks:true,
-      accurateTrackBounce:true,
-      webvisor:true
-    });
-  </script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/88740020" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
+  ym(88740020, 'init', {
+    clickmap: true,
+    trackLinks: true,
+    accurateTrackBounce: true,
+    webvisor: true
+  });
+</script>
+<noscript>
+  <div><img src="https://mc.yandex.ru/watch/88740020" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+<!-- /Yandex.Metrika counter -->
 </body>
 </html>

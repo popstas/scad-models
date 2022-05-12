@@ -29,7 +29,7 @@ async function start() {
   const result = await axios.get('config.json');
   const config = result.data;
 
-  const router = new VueRouter({mode: 'history'});
+  const router = new VueRouter({ mode: 'history' });
   const persistentFields = ['params', 'stlUrl', 'stlParams', 'stlMeta', 'gridSize', 'lang'];
   const computedFields = ['modelName', 's'];
 
@@ -95,7 +95,7 @@ async function start() {
         modelWidth: 0,
         modelHeight: 0,
         showScheme: false,
-      }
+      };
     },
 
     watch: {
@@ -118,7 +118,7 @@ async function start() {
             value: el.name,
             label: this.t(el, 'label') || el.name,
             image: el.preview || '',
-          }
+          };
         });
       },
 
@@ -156,12 +156,12 @@ async function start() {
         const items = kit.items.map(item => {
           const model = config.models.find(el => el.name === item.model);
           const preset = model?.presets?.find(m => m.id === item.id);
-          preset.name = this.modelOptions.find(m => m.value === item.model)?.label + ': ' + this.t(preset, 'name')
+          preset.name = this.modelOptions.find(m => m.value === item.model)?.label + ': ' + this.t(preset, 'name');
           if (!preset) isValid = false;
           preset.params.model = item.model;
-          return {...preset, model: item.model};
+          return { ...preset, model: item.model };
         });
-        return {...kit, items};
+        return { ...kit, items };
       },
 
       paramsInputs() {
@@ -194,7 +194,7 @@ async function start() {
         const parts = [
           this.stlMeta.box.join('mm x ') + 'mm',
           Math.round(this.stlMeta.weight) + 'gm',
-        ]
+        ];
         return parts.join(', ');
       }
     },
@@ -209,7 +209,7 @@ async function start() {
       if (!this.modelName) this.modelName = this.params.model;
       this.updateSizes();
 
-      window.addEventListener("scroll", () => {
+      window.addEventListener('scroll', () => {
         this.updateSizes();
       }, { passive: true });
 
@@ -227,7 +227,7 @@ async function start() {
         // Math.min(window?.innerWidth - 16 || 800, 1440)
         const span24 = Math.min(window?.innerWidth - 22, 3440);
         if (span24 < 720) return span24;
-        return span24 * 2/3;
+        return span24 * 2 / 3;
       },
       getModelHeight() {
         if (window?.innerWidth > 720) return window?.innerHeight * 1;
@@ -261,7 +261,7 @@ async function start() {
 
       async saveStl(params) {
         if (!params) params = this.params;
-        params = {...params, name: this.name};
+        params = { ...params, name: this.name };
         this.params = params;
         if (params.model && params.model !== this.modelName) this.modelName = params.model;
         if (!params.model) params.model = this.modelName; // TODO: запутался, тут лишние проверки модели туда-сюда
@@ -283,7 +283,7 @@ async function start() {
 
         if (!answer.data.stlPath) return;
 
-        this.stlParams = {...params};
+        this.stlParams = { ...params };
         this.stlMeta = answer.data;
         this.stlUrl = answer.data.stlPath + '?mt=' + Date.now();
       },
@@ -312,7 +312,7 @@ async function start() {
       },
 
       onStlLoad() {
-        for(let stl of [this.$refs.stl, this.$refs.stlMobile]) {
+        for (let stl of [this.$refs.stl, this.$refs.stlMobile]) {
           stl.scene.add(new THREE.GridHelper(155, this.gridSize)); // 155 = 1cm, 31x31cm = FlyingBear Reborn
           stl.scene.add(new THREE.AxesHelper(77.5)); // 155 / 2 ??
 

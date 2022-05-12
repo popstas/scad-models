@@ -22,19 +22,19 @@ function generator(params) {
   // console.log("partOffset:", partOffset);
 
   const topPart = difference(
-    cylinder(params.part1_height, params.part1_diam, {center: false}),
-    cylinder(params.part1_height, params.part1_diam - wall, {center: false}),
-  ).translate([ 0, 0, partOffset[0] ]);
+    cylinder(params.part1_height, params.part1_diam, { center: false }),
+    cylinder(params.part1_height, params.part1_diam - wall, { center: false }),
+  ).translate([0, 0, partOffset[0]]);
 
   const middlePart = difference(
-    cylinder(params.part2_height, [params.part1_diam, params.part3_diam], {center: false}),
-    cylinder(params.part2_height, [params.part1_diam - wall, params.part3_diam - wall], {center: false}),
-  ).translate([ 0, 0, partOffset[1] ]);
+    cylinder(params.part2_height, [params.part1_diam, params.part3_diam], { center: false }),
+    cylinder(params.part2_height, [params.part1_diam - wall, params.part3_diam - wall], { center: false }),
+  ).translate([0, 0, partOffset[1]]);
 
   const bottomPart = difference(
-    cylinder(params.part3_height, params.part3_diam, {center: false}),
-    cylinder(params.part3_height, params.part3_diam - wall, {center: false}),
-  ).translate([ 0, 0, partOffset[2] ]);
+    cylinder(params.part3_height, params.part3_diam, { center: false }),
+    cylinder(params.part3_height, params.part3_diam - wall, { center: false }),
+  ).translate([0, 0, partOffset[2]]);
 
   return union(
     topPart,
@@ -49,6 +49,7 @@ module.exports = {
   label: 'Funnel',
   label_ru: 'Воронка',
   preview: '/previews/funnel.png',
+
   params: [
     {
       label: 'Wall Thickness',
@@ -94,6 +95,7 @@ module.exports = {
       default: 9.64
     },
   ],
+
   presets: [
     {
       name: 'Small',
@@ -148,4 +150,4 @@ module.exports = {
       }
     },
   ]
-}
+};
