@@ -128,6 +128,19 @@
               </el-form-item>
 
               <div v-if="kitName">
+
+                <el-row v-if="modelName" class="presets-list items-list">
+                  <el-col :xs="12" :md="12" class="model-item" v-for="p of kit.items">
+                    <div class="model-card">
+                      <el-link :class="{'model-title': true, active: name === t(p, 'name')}" v-html="t(p, 'name')"
+                               @click.prevent="setPreset(p)"></el-link>
+                      <el-link class="model-image" @click.prevent="setPreset(p)">
+                        <img v-if="p.image"  :src="p.image" />
+                      </el-link>
+                    </div>
+                  </el-col>
+                </el-row>
+
                 <ul class="presets presets__list">
                   <li v-for="p of kit.items" :key="p.name">
                     <a :class="{'preset-link': true, 'preset-link__active': name == t(p, 'name')}"

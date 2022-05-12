@@ -88,6 +88,7 @@ function initExpress() {
   })
 
   app.get('/api/downloadStl', (req, res) => {
+    // if (req.query.cache === '0') // TODO:
     const cachePath = getCacheModel(req.query);
     if (!cachePath) {
       res.end('404');

@@ -71,7 +71,7 @@ footer {
 }
 
 .el-form {
-  max-width: 1440px;
+  /*max-width: 1440px;*/
   margin: 0 auto;
 }
 .el-form-item {
@@ -185,6 +185,13 @@ footer {
 .model-stl {
   margin-top: -15px;
 }
+@media (min-width: 720px) {
+  .model-stl {
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+}
 
 .actions {
   margin-top: 1rem;
@@ -216,6 +223,7 @@ footer {
 .model-item .el-link{
   display: block;
   margin-bottom: 5px;
+  min-height: 2rem;
   border: none !important;
   text-decoration: none !important;
 }
