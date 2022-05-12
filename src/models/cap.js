@@ -3,21 +3,24 @@ const { difference, cylinder, union } = require('scad-js');
 function generator(params) {
   const height = parseFloat(params.height);
   const lid_height = parseFloat(params.lid_height);
-  const inner_diam = parseFloat(params.inner_diam / 2) + 0.05; // 0.05 - gap for better fit
+  const inner_diam = parseFloat(params.inner_diam / 2);
   const inner2_height = parseFloat(params.inner2_height);
   const wall = parseFloat(params.wall);
 
   const bottomPart = cylinder(lid_height, inner_diam, {center: false})
     .translate([ 0, 0, 0 ]);
 
+  const outGap = 0.05; // for better fit
+  const inGap = 0.02; // -0.05 - too hard;
+
   const borderOuter = difference(
-    cylinder(height, inner_diam + wall, {center: false}),
-    cylinder(height, inner_diam, {center: false}),
+    cylinder(height, inner_diam + outGap + wall, {center: false}),
+    cylinder(height, inner_diam + outGap, {center: false}),
   ).translate([ 0, 0, 0 ]);
 
   const borderInner = difference(
-    cylinder(inner2_height, inner_diam - wall - 0.25, {center: false}),
-    cylinder(inner2_height, inner_diam - wall*2 - 0.25, {center: false}),
+    cylinder(inner2_height, inner_diam - inGap - wall, {center: false}),
+    cylinder(inner2_height, inner_diam - inGap - wall*2, {center: false}),
   ).translate([ 0, 0, 0 ]);
 
   return union(
@@ -33,6 +36,7 @@ module.exports = {
   label: 'Cap',
   label_ru: 'Крышка',
   preview: '/previews/cap.png',
+
   params: [
     {
       label: 'Wall Thickness',
@@ -92,7 +96,7 @@ module.exports = {
         wall: 0.8,
         height: 3,
         lid_height: 0.8,
-        inner_diam: 9.4,
+        inner_diam: 9.64,
         inner2_height: 5,
       }
     },
