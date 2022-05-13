@@ -210,10 +210,14 @@ footer {
 }
 
 @media (min-width: 720px) {
+  .leftCol {
+    width: 420px !important;
+  }
   .model-stl {
     position: fixed;
     right: 0;
     top: 0;
+    width: calc(100% - 420px);
   }
 }
 

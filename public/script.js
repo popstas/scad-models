@@ -231,7 +231,8 @@ async function start() {
         // Math.min(window?.innerWidth - 16 || 800, 1440)
         const span24 = Math.min(window?.innerWidth - 22, 3440);
         if (span24 < 720) return span24;
-        return span24 * 2 / 3;
+        // return span24 * 2 / 3;
+        return span24 - 420 - 10;
       },
       getModelHeight() {
         if (window?.innerWidth > 720) return window?.innerHeight * 1;
