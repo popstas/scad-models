@@ -99,6 +99,7 @@ async function start() {
         modelWidth: 0,
         modelHeight: 0,
         showScheme: false,
+        cache_enabled: true,
       };
     },
 
@@ -252,6 +253,8 @@ async function start() {
           height: 'H',
           top: 'Tp',
           bottom: 'Bt',
+          left: 'Lf',
+          right: 'Rg',
           diam: 'D',
           wall: 'W',
         };
@@ -271,6 +274,8 @@ async function start() {
         if (params.model && params.model !== this.modelName) this.modelName = params.model;
         if (!params.model) params.model = this.modelName; // TODO: запутался, тут лишние проверки модели туда-сюда
         if (!params.model) return;
+        delete(params.cache); // TODO: он не должен попадать сюда
+        if (!this.cache_enabled) params.cache = false;
         this.setUrlFromParams();
 
         this.statusText = 'Generating SCAD -> STL...';
@@ -311,7 +316,14 @@ async function start() {
 
       setParamsFromUrl() {
         for (let name in this.$route.query) {
-          this.params[name] = this.$route.query[name];
+          const val = this.$route.query[name]
+
+          if (name === 'cache') {
+            this.cache_enabled = val != '0' && val;
+            continue;
+          }
+
+          this.params[name] = val;
           if (name === 'model') this.modelName = this.params[name];
         }
       },

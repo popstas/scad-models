@@ -198,7 +198,7 @@
         <div class="step" v-if="name || stlUrl">
           <h3>{{ t(s, 'step3') }}:</h3>
           <div :class="{ processing: isProcess, actions: true}">
-            <el-button @click="saveStl()" type="primary" :disabled="isParamsGenerated"
+            <el-button @click="saveStl()" type="primary" :disabled="isParamsGenerated && cache_enabled"
                        v-html="t(s, 'generate_stl')"></el-button>
             <span class="statusText" v-html="statusText"></span>
             <span class="errorText" v-html="errorText"></span>

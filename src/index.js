@@ -38,7 +38,7 @@ function getStlFromScad(pathScad) {
 
 function buildPngFromScad(pathScad) {
   const pathPng = pathScad.replace(/\.scad$/, '.png');
-  if (fs.existsSync(pathPng)) {
+  if (fs.existsSync(pathPng) && config.cache_enabled) {
     console.log('png cached:', pathPng);
     return pathPng;
   }
@@ -79,19 +79,29 @@ function initExpress() {
 
   app.post('/api/getStl', async (req, res) => {
     const params = req.body;
-    res.json(getStl(params));
+    const noCache = params.cache !== undefined && ['0', 'false', false].includes(params.cache);
+    const currentCache = config.cache_enabled;
+
+    if (noCache) {
+      config.cache_enabled = false;
+      console.log("noCache");
+    }
+    const stlData = getStl(params);
+    if (noCache) config.cache_enabled = currentCache;
+
+    res.json(stlData);
   });
 
   app.get('/api/downloadStl', (req, res) => {
-    const cachePath = getCacheModel(req.query);
-    if (!cachePath) {
+    const pathScad = saveScad(req.query);
+    if (!pathScad || pathScad?.error) {
       res.end('404');
       return;
     }
-    const stlPath = cachePath.replace(/\.scad$/, '.stl');
+    const pathStl = getStlFromScad(pathScad);
 
     const filename = getFilename(req.query) + '.stl';
-    resSendFile(res, filename, stlPath);
+    resSendFile(res, pathStl, filename);
   });
 
   app.get('/api/downloadkit', async (req, res) => {
@@ -102,7 +112,7 @@ function initExpress() {
       return;
     }
 
-    resSendFile(res, kitData.filename, kitData.path);
+    resSendFile(res, kitData.path, kitData.filename);
   });
 
   app.listen(config.port, () => { console.log(`listen port ${config.port}`); });
@@ -232,13 +242,13 @@ function resSendFile(res, filePath, filename) {
 }
 
 function saveScad(params) {
+  console.log(params);
   if (!isParamsValid(params)) {
     const msg = 'params not valid';
     console.log(msg);
     return { error: msg };
   }
 
-  console.log(params);
   const generator = models[params.model].generator;
   if (!generator) {
     const msg = 'generator not found for model ' + params.model;
@@ -300,6 +310,10 @@ function getFilename(params) {
     .replace(/part/g, 'p')
     .replace(/inner/g, 'in')
     .replace(/height/g, 'h')
+    .replace(/top/g, 't')
+    .replace(/bottom/g, 'b')
+    .replace(/left/g, 'l')
+    .replace(/right/g, 'r')
     .replace(/diam/g, 'd');
   if (params.name) filename += `-${params.name}`;
   return filename;
