@@ -196,8 +196,8 @@ async function start() {
       metaInfo() {
         if (!this.stlMeta?.box) return '';
         const parts = [
-          this.stlMeta.box.join('mm x ') + 'mm',
-          Math.round(this.stlMeta.weight) + 'gm',
+          this.stlMeta.box.join(' x ') + ' mm',
+          Math.round(this.stlMeta.weight) + 'g',
         ];
         return parts.join(', ');
       }

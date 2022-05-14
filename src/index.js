@@ -68,27 +68,21 @@ function initExpress() {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
+  app.use('/', express.static('public'));
+
+  app.use('/models', express.static('data'));
+
   // config.json
   app.get('/config.json', (_req, res) => {
-    // const conf = {...config};
-    const conf = { models: [] };
-    for (let name in models) {
-      const m = { ...models[name] };
-      delete (m.generator);
-      conf.models.push(m);
+    res.json(getFrontConfig());
+  });
 
-      for (let p of m.presets) {
-        const pathScad = getScadPath({ model: m.name, ...p.params });
-        const pathPng = pathScad.replace(/\.scad$/, '.png');
-        p.image = pathPng.replace('./data', 'models');
-      }
-    }
-    conf.kits = config.kits || [];
-    res.json(conf);
+  app.post('/api/getStl', async (req, res) => {
+    const params = req.body;
+    res.json(getStl(params));
   });
 
   app.get('/api/downloadStl', (req, res) => {
-    // if (req.query.cache === '0') // TODO:
     const cachePath = getCacheModel(req.query);
     if (!cachePath) {
       res.end('404');
@@ -97,93 +91,18 @@ function initExpress() {
     const stlPath = cachePath.replace(/\.scad$/, '.stl');
 
     const filename = getFilename(req.query) + '.stl';
-    res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(filename));
-    res.setHeader('Content-Transfer-Encoding', 'binary');
-    res.setHeader('Content-Type', 'application/octet-stream');
-
-    res.sendFile(path.resolve(stlPath));
-  });
-
-  app.use('/', express.static('public'));
-
-  app.use('/models', express.static('data'));
-
-  app.post('/api/getStl', async (req, res) => {
-    const pathScad = saveModel(req.body);
-    if (!pathScad || pathScad?.error) {
-      res.json({ error: 'Failed: ' + pathScad?.error });
-      return;
-    }
-
-    const pathPng = buildPngFromScad(pathScad);
-    const pathStl = getStlFromScad(pathScad);
-
-    if (!pathStl) {
-      res.json({ error: 'Failed to convert SCAD to STL' });
-      return;
-    }
-
-    const stlPath = pathStl.replace('./data', 'models');
-    const stl = new NodeStl(pathStl, { density: config.material.density });
-
-    res.json({
-      stlPath,
-      image: pathPng,
-      volume: stl.volume,
-      weight: stl.weight,
-      box: stl.boundingBox,
-    });
+    resSendFile(res, filename, stlPath);
   });
 
   app.get('/api/downloadkit', async (req, res) => {
     const kitName = req.query.name;
-    const kit = config.kits.find(el => el.name === kitName);
-    if (!kit) {
-      res.end(404);
+    const kitData = getKit(kitName);
+    if (kitData.error) {
+      res.json(kitData);
       return;
     }
 
-    // cache
-    const cacheDir = `${config.cachePath}/kits`;
-    const kitFilename = `kit-${kitName}.zip`;
-    const kitPath = `${cacheDir}/${kitFilename}`;
-
-    // generate zip
-    if (!fs.existsSync(kitPath)) {
-      let isValid = true;
-      const items = kit.items.map(item => {
-        const preset = models[item.model]?.presets?.find(m => m.id === item.id);
-        if (!preset) isValid = false;
-        return { ...preset, model: item.model };
-      });
-      if (!isValid) {
-        console.log('cannot find all models for kit:', kitName);
-        res.end(404);
-        return;
-      }
-
-      // Save to zip
-      const zip = new AdmZip();
-      for (let item of items) {
-        const pathScad = saveModel({ ...item.params, model: item.model });
-        if (!pathScad || pathScad?.error) {
-          isValid = false;
-          continue;
-        }
-
-        const pathStl = getStlFromScad(pathScad);
-        zip.addLocalFile(pathStl);
-      }
-      zip.writeZip(kitPath);
-    } else {
-      console.log('Use cached kitPath:', kitPath);
-    }
-
-    res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(kitFilename));
-    res.setHeader('Content-Transfer-Encoding', 'binary');
-    res.setHeader('Content-Type', 'application/octet-stream');
-
-    res.sendFile(path.resolve(kitPath));
+    resSendFile(res, kitData.filename, kitData.path);
   });
 
   app.listen(config.port, () => { console.log(`listen port ${config.port}`); });
@@ -202,8 +121,117 @@ function isParamsValid(params) {
   return true;
 }
 
-function saveModel(params) {
-  console.log('saveModel');
+function getFrontConfig() {
+  const conf = { models: [] };
+  for (let name in models) {
+    const m = { ...models[name] };
+    delete (m.generator);
+    conf.models.push(m);
+
+    for (let p of m.presets) {
+      const pathScad = getScadPath({ model: m.name, ...p.params });
+      const pathPng = pathScad.replace(/\.scad$/, '.png');
+      p.image = pathPng.replace('./data', 'models');
+    }
+  }
+  conf.kits = config.kits || [];
+  return conf;
+}
+
+// return stl data, create scad and stl from params if not exists
+function getStl(params) {
+  const pathScad = saveScad(params);
+  if (!pathScad || pathScad?.error) {
+    return { error: 'Failed: ' + pathScad?.error };
+  }
+
+  const pathPng = buildPngFromScad(pathScad);
+  const pathStl = getStlFromScad(pathScad);
+
+  if (!pathStl) {
+    return { error: 'Failed to convert SCAD to STL' };
+  }
+
+  const stlPath = pathStl.replace('./data', 'models');
+  const stl = new NodeStl(pathStl, { density: config.material.density });
+
+  return {
+    stlPath,
+    image: pathPng,
+    volume: stl.volume,
+    weight: stl.weight,
+    box: stl.boundingBox,
+  };
+}
+
+// create and return zip archive
+function getKit(kitName) {
+  const kit = config.kits.find(el => el.name === kitName);
+  if (!kit) {
+    return { error: `Kit not exists: ${kitName}` };
+  }
+
+  // cache
+  const cacheDir = `${config.cachePath}/kits`;
+  const kitFilename = `kit-${kitName}.zip`;
+  const kitPath = `${cacheDir}/${kitFilename}`;
+
+  // generate zip
+  if (!fs.existsSync(kitPath)) {
+    let isValid = true;
+
+    // get presets
+    const items = kit.items.map(item => {
+      const preset = models[item.model]?.presets?.find(m => m.id === item.id);
+      if (!preset) isValid = false;
+      return { ...preset, model: item.model };
+    });
+    if (!isValid) {
+      return { error: `Cannot find all models for kit ${kitName}` };
+    }
+
+    // Save to zip
+    const zip = new AdmZip();
+    for (let item of items) {
+      const pathScad = saveScad({ ...item.params, model: item.model });
+      if (!pathScad || pathScad?.error) {
+        isValid = false;
+        continue;
+      }
+
+      // add scad
+      zip.addLocalFile(pathScad);
+
+      // add stl
+      const pathStl = getStlFromScad(pathScad);
+      zip.addLocalFile(pathStl);
+
+      // add zip
+      const pathPng = buildPngFromScad(pathScad);
+      if (fs.existsSync(pathPng)) {
+        zip.addLocalFile(pathPng);
+      }
+    }
+    zip.writeZip(kitPath);
+  } else {
+    console.log('Use cached kitPath:', kitPath);
+  }
+
+  return {
+    path: kitPath,
+    filename: kitFilename,
+  };
+}
+
+function resSendFile(res, filePath, filename) {
+  res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(filename));
+  res.setHeader('Content-Transfer-Encoding', 'binary');
+  res.setHeader('Content-Type', 'application/octet-stream');
+
+  res.sendFile(path.resolve(filePath));
+}
+
+function saveScad(params) {
   if (!isParamsValid(params)) {
     const msg = 'params not valid';
     console.log(msg);
