@@ -1,8 +1,13 @@
-const normalizedPath = require('path').join(__dirname, '.');
+import cap from './cap.js';
+import corners from './corners.js';
+import cup from './cup.js';
+import funnel from './funnel.js';
+import shim from './shim.js';
 
-require('fs')
-  .readdirSync(normalizedPath)
-  .forEach(function (file) {
-    const moduleName = file.split('.')[0];
-    if (file !== 'index.js' && !file.startsWith('_')) exports[moduleName] = require('./' + file);
-  });
+export default {
+  cap,
+  corners,
+  cup,
+  funnel,
+  shim,
+};

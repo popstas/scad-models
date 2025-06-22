@@ -1,4 +1,4 @@
-const config = {
+export default {
   cache_enabled: true,
   cachePath: './data/cache',
   material: {
@@ -46,4 +46,3 @@ const config = {
     }
   ],
 };
-module.exports = config;

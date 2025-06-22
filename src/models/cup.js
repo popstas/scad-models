@@ -1,4 +1,5 @@
-const { difference, cylinder, union } = require('scad-js');
+import scad from 'scad-js';
+const { difference, cylinder, union } = scad;
 
 function generator(params) {
   const height = parseFloat(params.height);
@@ -20,7 +21,7 @@ function generator(params) {
   );
 }
 
-module.exports = {
+export default {
   generator,
   name: 'cup',
   label: 'Cup / Jar',

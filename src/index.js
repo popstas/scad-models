@@ -1,18 +1,21 @@
-const fs = require('fs');
-const path = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-const { exec, execSync } = require('child_process');
-const config = require('../config');
-const models = require('./models');
-const NodeStl = require('node-stl');
-const AdmZip = require('adm-zip');
+import fs from 'fs';
+import path from 'path';
+import express from 'express';
+import bodyParser from 'body-parser';
+import { exec, execSync } from 'child_process';
+import config from '../config.js';
+import models from './models/index.js';
+import NodeStl from 'node-stl';
+import AdmZip from 'adm-zip';
+import { fileURLToPath } from 'url';
 
-start();
-
-function start() {
+export function start() {
   fs.mkdirSync(config.cachePath, { recursive: true });
   initExpress();
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  start();
 }
 
 function getModelConfig(name) {
@@ -291,7 +294,7 @@ function saveScad(params) {
   return filePath;
 }
 
-function getCacheKey(params) {
+export function getCacheKey(params) {
   const parts = [];
   const mParams = getModelConfig(params.model)?.params;
 
@@ -314,7 +317,7 @@ function getCacheKey(params) {
   return key;
 }
 
-function getFilename(params) {
+export function getFilename(params) {
   // const h = new Date().getHours();
   // const m = new Date().getMinutes();
   // const date = Y-m-d_h-i
@@ -334,7 +337,7 @@ function getFilename(params) {
   return filename;
 }
 
-function getScadPath(params) {
+export function getScadPath(params) {
   const key = getCacheKey(params);
   return `${config.cachePath}/${key}.scad`;
 }

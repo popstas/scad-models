@@ -1,4 +1,5 @@
-const { difference, cylinder, union } = require('scad-js');
+import scad from 'scad-js';
+const { difference, cylinder, union } = scad;
 
 function generator(params) {
   params.part1_diam = parseFloat(params.part1_diam / 2);
@@ -43,7 +44,7 @@ function generator(params) {
   );
 }
 
-module.exports = {
+export default {
   generator,
   name: 'funnel',
   label: 'Funnel',

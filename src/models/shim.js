@@ -1,4 +1,5 @@
-const { difference, cylinder } = require('scad-js');
+import scad from 'scad-js';
+const { difference, cylinder } = scad;
 
 function generator(params) {
   const inner = parseFloat(params.inner / 2);
@@ -11,7 +12,7 @@ function generator(params) {
   );
 }
 
-module.exports = {
+export default {
   generator,
   name: 'shim',
   label: 'Shim',

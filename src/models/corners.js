@@ -1,4 +1,5 @@
-const { difference, cylinder, union, g } = require('scad-js');
+import scad from 'scad-js';
+const { difference, cylinder, union, g } = scad;
 
 function generator(params) {
   console.log({params})
@@ -19,7 +20,7 @@ function generator(params) {
   ));
 }
 
-module.exports = {
+export default {
   generator,
   name: 'corners',
   label: 'Corners',
