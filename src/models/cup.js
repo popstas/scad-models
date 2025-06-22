@@ -71,12 +71,25 @@ module.exports = {
       }
     },
     {
-      name: 'Cup for small funnel',
-      name_ru: 'Баночка под маленькую воронку-крышку',
-      id: 'for_funnels',
+      name: 'Cup medium',
+      name_ru: 'Баночка средняя',
+      desc_ru: 'Подходит под маленькую воронку и под большую, с переходником.',
+      id: 'medium',
       params: {
         wall: 1.0,
         height: 40,
+        top_diam: 32.2,
+        bottom_diam: 32.2,
+      }
+    },
+    {
+      name: 'Cup medium low',
+      name_ru: 'Баночка средняя низкая',
+      desc_ru: 'Подходит под маленькую воронку и под большую, с переходником.',
+      id: 'medium',
+      params: {
+        wall: 1.0,
+        height: 20,
         top_diam: 32.2,
         bottom_diam: 32.2,
       }

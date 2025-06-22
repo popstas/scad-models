@@ -241,8 +241,21 @@ function resSendFile(res, filePath, filename) {
   res.sendFile(path.resolve(filePath));
 }
 
+function fillParamsDefault(params) {
+  const mParams = getModelConfig(params.model)?.params;
+  if (!mParams) return params;
+  for (let p of mParams) {
+    if (params[p.name] === undefined) {
+      params[p.name] = p.default;
+    }
+  }
+  return params;
+}
+
 function saveScad(params) {
-  console.log(params);
+  console.log('params:', params);
+  params = fillParamsDefault(params);
+  console.log('params filled:', params);
   if (!isParamsValid(params)) {
     const msg = 'params not valid';
     console.log(msg);
@@ -302,10 +315,12 @@ function getCacheKey(params) {
 }
 
 function getFilename(params) {
-  const h = new Date().getHours();
-  const m = new Date().getMinutes();
+  // const h = new Date().getHours();
+  // const m = new Date().getMinutes();
+  // const date = Y-m-d_h-i
+  const date = new Date().toISOString().replace(/[:]/g, '_').replace(/T/, '_').replace(/\..+/, '');
   let filename = getCacheKey(params)
-    .replace('-', `-${h}${m}-`)
+    .replace('-', `-${date}-`)
     .replace(/=/g, '')
     .replace(/part/g, 'p')
     .replace(/inner/g, 'in')

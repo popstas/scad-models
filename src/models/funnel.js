@@ -103,7 +103,7 @@ module.exports = {
       id: 'small',
       params: {
         wall: 0.8,
-        part1_diam: 33.8,
+        part1_diam: 33.7,
         part3_diam: 9.64,
         part1_height: 5,
         part2_height: 20,

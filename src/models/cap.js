@@ -10,8 +10,8 @@ function generator(params) {
   const bottomPart = cylinder(lid_height, inner_diam, { center: false })
     .translate([0, 0, 0]);
 
-  const outGap = 0.05; // for better fit
-  const inGap = 0.02; // -0.05 - too hard;
+  const outGap = 0.01; // for better fit
+  const inGap = 0.01; // -0.05 - too hard;
 
   const borderOuter = difference(
     cylinder(height, inner_diam + outGap + wall, { center: false }),
@@ -19,8 +19,8 @@ function generator(params) {
   ).translate([0, 0, 0]);
 
   const borderInner = difference(
-    cylinder(inner2_height, inner_diam - inGap - wall, { center: false }),
-    cylinder(inner2_height, inner_diam - inGap - wall * 2, { center: false }),
+    cylinder(inner2_height, inner_diam - wall + inGap, { center: false }),
+    cylinder(inner2_height, inner_diam - wall * 2 + inGap, { center: false }),
   ).translate([0, 0, 0]);
 
   return union(
@@ -95,7 +95,7 @@ module.exports = {
       params: {
         wall: 0.8,
         height: 3,
-        lid_height: 0.8,
+        lid_height: 1.2,
         inner_diam: 9.64,
         inner2_height: 5,
       }
