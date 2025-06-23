@@ -76,42 +76,4 @@ export default {
     },
   ],
 
-  presets: [
-    {
-      name: 'For small cup',
-      name_ru: 'Под маленькую баночку',
-      id: 'for_small_cup',
-      params: {
-        wall: 0.8,
-        height: 3,
-        lid_height: 0.8,
-        inner_diam: 11.6,
-        inner2_height: 5,
-      }
-    },
-    {
-      name: 'For small funnel',
-      name_ru: 'Под маленькую воронку',
-      id: 'for_small_funnel',
-      params: {
-        wall: 0.8,
-        height: 3,
-        lid_height: 1.2,
-        inner_diam: 9.64,
-        inner2_height: 5,
-      }
-    },
-    {
-      name: 'Connector for big funnel',
-      name_ru: 'Соединитель большой воронки',
-      id: 'connector_for_big_funnel',
-      params: {
-        wall: 1,
-        height: 15,
-        lid_height: 0,
-        inner_diam: 32.2,
-        inner2_height: 0,
-      }
-    },
-  ],
 };

@@ -1,0 +1,13 @@
+{
+  "name": "Big",
+  "name_ru": "Большая",
+  "id": "big",
+  "params": {
+    "wall": 1,
+    "part1_diam": 100,
+    "part3_diam": 32.2,
+    "part1_height": 5,
+    "part2_height": 60,
+    "part3_height": 20
+  }
+}

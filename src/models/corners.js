@@ -73,17 +73,5 @@ export default {
 
   ],
 
-  presets: [
-    {
-      name: '~66mm x 68mm',
-      params: {
-        bottom_height: 8,
-        wall: 8,
-        count: 7,
-        diameter: 70,
-        height: 70,
-        hole: 0,
-      }
-    },
-  ],
+  
 };

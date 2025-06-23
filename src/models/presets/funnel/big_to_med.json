@@ -1,0 +1,13 @@
+{
+  "name": "Big to med",
+  "name_ru": "Переходник с большой на полторашку",
+  "id": "big_to_med",
+  "params": {
+    "wall": 1,
+    "part1_diam": 34.1,
+    "part3_diam": 21,
+    "part1_height": 5,
+    "part2_height": 20,
+    "part3_height": 25
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "For small funnel",
+  "name_ru": "Под маленькую воронку",
+  "id": "for_small_funnel",
+  "params": {
+    "wall": 0.8,
+    "height": 3,
+    "lid_height": 1.2,
+    "inner_diam": 9.64,
+    "inner2_height": 5
+  }
+}

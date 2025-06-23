@@ -109,21 +109,4 @@ export default {
       default: 0,
     },
   ],
-
-  presets: [
-    {
-      name: 'Xiaomi Dishwasher connector',
-      //name_ru: '10 mm to 19 mm',
-      id: 'xiaomi_dishwasher',
-      params: {
-        wall: 1,
-        part1_diam: 21.4,
-        part1_height: 20,
-        part2_diam: 30,
-        part2_height: 1,
-        part3_diam: 0,
-        part3_height: 0,
-      }
-    },
-  ]
 };

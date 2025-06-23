@@ -1,0 +1,13 @@
+{
+  "name": "For small cup",
+  "name_ru": "Под маленькую баночку",
+  "id": "for_small_cup",
+  "params": {
+    "wall": 0.8,
+    "height": 3,
+    "lid_height": 0.8,
+    "inner_diam": 11.6,
+    "inner2_height": 5
+  }
+}
+

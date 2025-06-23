@@ -95,6 +95,20 @@ function initExpress() {
     res.json(stlData);
   });
 
+  app.post('/api/savePreset', (req, res) => {
+    const { model, name, params } = req.body;
+    if (!model || !name || !params) {
+      res.status(400).json({ error: 'Invalid params' });
+      return;
+    }
+    const presetNameSafe = sanitizePresetName(name);
+    const dir = `data/user-presets/${model}`;
+    fs.mkdirSync(dir, { recursive: true });
+    const presetPath = `${dir}/${presetNameSafe}.json`;
+    fs.writeFileSync(presetPath, JSON.stringify({ name, params }, null, 2));
+    res.json({ ok: true });
+  });
+
   app.get('/api/downloadStl', (req, res) => {
     const pathScad = saveScad(req.query);
     if (!pathScad || pathScad?.error) {
@@ -348,4 +362,8 @@ function getCacheModel(params) {
   if (fs.existsSync(filePath)) {
     return filePath;
   }
+}
+
+export function sanitizePresetName(name) {
+  return name.replace(/[^A-Za-z0-9\- ()]+/g, '').trim();
 }

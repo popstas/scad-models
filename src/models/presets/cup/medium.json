@@ -1,0 +1,12 @@
+{
+  "name": "Cup medium low",
+  "name_ru": "Баночка средняя низкая",
+  "desc_ru": "Подходит под маленькую воронку и под большую, с переходником.",
+  "id": "medium",
+  "params": {
+    "wall": 1,
+    "height": 20,
+    "top_diam": 32.2,
+    "bottom_diam": 32.2
+  }
+}

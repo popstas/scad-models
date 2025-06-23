@@ -1,0 +1,13 @@
+{
+  "name": "Medium",
+  "name_ru": "Под полторашку",
+  "id": "medium",
+  "params": {
+    "wall": 0.8,
+    "part1_diam": 80,
+    "part3_diam": 21,
+    "part1_height": 5,
+    "part2_height": 70,
+    "part3_height": 20
+  }
+}

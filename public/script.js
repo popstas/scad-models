@@ -93,6 +93,7 @@ async function start() {
         statusText: '',
         errorText: '',
         name: '', // название модели
+        presetName: '',
         positionZ: 0,
         dialogVisible: false,
         kitName: '',
@@ -344,6 +345,17 @@ async function start() {
       setPreset(p) {
         this.name = this.t(p, 'name');
         this.saveStl(p.params);
+      },
+
+      async savePreset() {
+        const data = {
+          model: this.modelName,
+          name: this.presetName,
+          params: this.params,
+        };
+        await axios.post('/api/savePreset', data);
+        this.presetName = '';
+        location.reload();
       },
     }
   });
