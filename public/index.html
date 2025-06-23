@@ -222,6 +222,10 @@
               class="el-icon-share"></i> {{ t(s, 'link') }}</a>
             <a :class="{'download-link': true, 'link__changed': !isParamsGenerated}" v-if="stlUrl"
                :title="t(s, 'scad_edit')" :href="stlUrl.replace(/\.stl/, '.scad')">SCAD</a>
+            <div class="save-preset">
+              <el-input v-model="presetName" placeholder="Preset name" style="width: 200px"></el-input>
+              <el-button @click="savePreset" :disabled="!presetName">Save as preset</el-button>
+            </div>
           </div>
         </div>
       </el-col>

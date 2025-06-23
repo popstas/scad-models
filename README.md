@@ -8,6 +8,9 @@
 - Kits - model set from several models
 - Share - send link to tuned model
 - Printer-friendly - STL filenames optimized
+- Save as preset to reuse parameters
+
+Custom presets are stored in `data/user-presets/<model>/<name>.json` and loaded on startup.
 
 ## Models
 - Funnel

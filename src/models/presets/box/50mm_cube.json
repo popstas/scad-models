@@ -1,0 +1,10 @@
+{
+  "name": "50mm cube",
+  "params": {
+    "wall": 1,
+    "width": 50,
+    "height": 50,
+    "depth": 50,
+    "round_size": 1
+  }
+}

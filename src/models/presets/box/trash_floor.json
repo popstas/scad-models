@@ -1,0 +1,10 @@
+{
+  "name": "Trash floor",
+  "params": {
+    "wall": 1,
+    "round_size": 0,
+    "width": 95,
+    "height": 10,
+    "depth": 95
+  }
+}

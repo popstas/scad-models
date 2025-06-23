@@ -43,14 +43,5 @@ export default {
     },
   ],
 
-  presets: [
-    {
-      name: '5mm x 10mm',
-      params: {
-        wall: 1,
-        inner: 5,
-        outer: 10,
-      }
-    },
-  ],
+  
 };

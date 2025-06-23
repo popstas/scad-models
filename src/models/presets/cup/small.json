@@ -1,0 +1,11 @@
+{
+  "name": "Small cup",
+  "name_ru": "Маленькая баночка",
+  "id": "small",
+  "params": {
+    "wall": 1,
+    "height": 40,
+    "top_diam": 11.6,
+    "bottom_diam": 11.6
+  }
+}

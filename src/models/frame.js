@@ -51,15 +51,5 @@ export default {
     },
   ],
 
-  presets: [
-    {
-      name: '100mm cube',
-      params: {
-        wall: 1,
-        width: 100,
-        height: 100,
-        depth: 5,
-      }
-    },
-  ],
+  
 };

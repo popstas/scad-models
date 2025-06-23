@@ -1,0 +1,12 @@
+{
+  "name": "Connector for big funnel",
+  "name_ru": "Соединитель большой воронки",
+  "id": "connector_for_big_funnel",
+  "params": {
+    "wall": 1,
+    "height": 15,
+    "lid_height": 0,
+    "inner_diam": 32.2,
+    "inner2_height": 0
+  }
+}

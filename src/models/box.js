@@ -62,27 +62,4 @@ export default {
     },
   ],
 
-  presets: [
-    {
-      name: '50mm cube',
-      params: {
-        wall: 1,
-        width: 50,
-        height: 50,
-        depth: 50,
-        round_size: 1,
-      }
-    },
-    {
-      name: 'Trash floor',
-      params: {
-        wall: 1,
-        round_size: 1,
-        width: 95,
-        height: 10,
-        depth: 95,
-        round_size: 0,
-      }
-    },
-  ],
 };
