@@ -4,7 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { exec, execSync } from 'child_process';
 import config from '../config.js';
-import models from './models/index.js';
+import models, { loadPresets } from './models/index.js';
 import NodeStl from 'node-stl';
 import AdmZip from 'adm-zip';
 import { fileURLToPath } from 'url';
@@ -20,6 +20,12 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
 function getModelConfig(name) {
   return models[name];
+}
+
+function reloadPresets() {
+  for (const name in models) {
+    models[name].presets = loadPresets(name);
+  }
 }
 
 function getStlFromScad(pathScad) {
@@ -107,6 +113,7 @@ function initExpress() {
     const presetPath = `${dir}/${presetNameSafe}.json`;
     fs.writeFileSync(presetPath, JSON.stringify({ name, params }, null, 2));
     res.json({ ok: true });
+    reloadPresets();
   });
 
   app.get('/api/downloadStl', (req, res) => {

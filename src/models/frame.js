@@ -18,7 +18,7 @@ export default {
   name: 'frame',
   label: 'Frame',
   label_ru: 'Рамка',
-  preview: '/previews/box.png',
+  preview: '/previews/frame.png',
 
   params: [
     {
