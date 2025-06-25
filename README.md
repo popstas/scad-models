@@ -17,3 +17,8 @@ Custom presets are stored in `data/user-presets/<model>/<name>.json` and loaded 
 - Shim
 - Cup
 - Cap
+
+## Development
+Run `npm install` to install dependencies. Execute `npm test` to run the
+Mocha test suite. TypeScript sources can be compiled with `npm run build` using
+the provided `tsconfig.json`.

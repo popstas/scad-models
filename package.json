@@ -3,7 +3,8 @@
     "start": "npm run dev",
     "dev": "nodemon --watch src src/index.js && openscad dist/output.scad",
     "render": "node src/index.js && openscad dist/output.scad -o dist/output.stl",
-    "test": "mocha"
+    "test": "mocha",
+    "build": "tsc"
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
@@ -16,7 +17,10 @@
     "npm": "^8.9.0",
     "nodemon": "^2.0.7",
     "mocha": "^10.4.0",
-    "chai": "^4.4.1"
+    "chai": "^4.4.1",
+    "typescript": "^5.4.2",
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.9.0"
   },
   "name": "scad-models",
   "version": "1.0.0",
