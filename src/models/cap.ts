@@ -1,13 +1,13 @@
-// @ts-nocheck
 import scad from 'scad-js';
+import type { ModelDefinition } from '../types.js';
 const { difference, cylinder, union } = scad;
 
-function generator(params) {
-  const height = parseFloat(params.height);
-  const lid_height = parseFloat(params.lid_height);
-  const inner_diam = parseFloat(params.inner_diam / 2);
-  const inner2_height = parseFloat(params.inner2_height);
-  const wall = parseFloat(params.wall);
+function generator(params: Record<string, any>): any {
+  const height = Number(params.height);
+  const lid_height = Number(params.lid_height);
+  const inner_diam = Number(params.inner_diam / 2);
+  const inner2_height = Number(params.inner2_height);
+  const wall = Number(params.wall);
 
   const bottomPart = cylinder(lid_height, inner_diam, {
     center: false,
@@ -29,7 +29,7 @@ function generator(params) {
   return union(bottomPart, borderOuter, borderInner);
 }
 
-export default {
+const model: ModelDefinition = {
   generator,
   name: 'cap',
   label: 'Cap',
@@ -74,3 +74,5 @@ export default {
     },
   ],
 };
+
+export default model;

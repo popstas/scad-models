@@ -1,14 +1,14 @@
-// @ts-nocheck
 import scad from 'scad-js';
+import type { ModelDefinition } from '../types.js';
 const { difference, cylinder, union } = scad;
 
-function generator(params) {
+function generator(params: Record<string, any>): any {
   console.log({ params });
-  const height = parseFloat(params.height);
-  const bottom_height = parseFloat(params.bottom_height);
-  const radius = parseFloat(params.diameter / 2);
-  const hole_radius = parseFloat(params.hole / 2);
-  const wall = parseFloat(params.wall);
+  const height = Number(params.height);
+  const bottom_height = Number(params.bottom_height);
+  const radius = Number(params.diameter / 2);
+  const hole_radius = Number(params.hole / 2);
+  const wall = Number(params.wall);
   const count = parseInt(params.count);
 
   return union(
@@ -23,7 +23,7 @@ function generator(params) {
   );
 }
 
-export default {
+const model: ModelDefinition = {
   generator,
   name: 'corners',
   label: 'Corners',
@@ -75,3 +75,5 @@ export default {
     },
   ],
 };
+
+export default model;

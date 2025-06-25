@@ -2,14 +2,15 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import type { ModelDefinition, Preset } from '../types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const models = {};
+const models: Record<string, ModelDefinition> = {};
 
-function loadPresets(modelName) {
-  const result = [];
+function loadPresets(modelName: string): Preset[] {
+  const result: Preset[] = [];
   const builtinDir = path.join(__dirname, 'presets', modelName);
   const userDir = path.resolve('data/user-presets', modelName);
   [builtinDir, userDir].forEach((dir) => {
@@ -38,7 +39,7 @@ for (const file of files) {
     const moduleName = file.replace(/\.js$/, '');
     const modulePath = `./${file}`;
     const module = await import(modulePath);
-    models[moduleName] = { ...module.default, presets: [] };
+    models[moduleName] = { ...(module as any).default, presets: [] };
   } catch (error) {
     console.error(`Error loading model ${file}:`, error);
   }

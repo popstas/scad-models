@@ -1,12 +1,12 @@
-// @ts-nocheck
 import scad from 'scad-js';
+import type { ModelDefinition } from '../types.js';
 const { difference, cube } = scad;
 
-function generator(params) {
-  const wall = parseFloat(params.wall);
-  const width = parseFloat(params.width);
-  const height = parseFloat(params.height);
-  const depth = parseFloat(params.depth);
+function generator(params: Record<string, any>): any {
+  const wall = Number(params.wall);
+  const width = Number(params.width);
+  const height = Number(params.height);
+  const depth = Number(params.depth);
 
   return difference(
     cube([width, depth, height], { center: true }),
@@ -14,7 +14,7 @@ function generator(params) {
   );
 }
 
-export default {
+const model: ModelDefinition = {
   generator,
   name: 'frame',
   label: 'Frame',
@@ -52,3 +52,5 @@ export default {
     },
   ],
 };
+
+export default model;
