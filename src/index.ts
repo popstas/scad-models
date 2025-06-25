@@ -3,16 +3,16 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import { exec, execSync } from 'child_process';
-import config from '../config.js';
+import config from './config.js';
 import models, { loadPresets } from './models/index.js';
-import type { ModelDefinition, Preset } from './types.js';
+import type { ModelDefinition, Preset, Config, StlInfo, Kit, KitArchive } from './types.js';
 import NodeStl from 'node-stl';
 import AdmZip from 'adm-zip';
 import { fileURLToPath } from 'url';
 
-export function start() {
+export function start(): express.Express {
   fs.mkdirSync(config.cachePath, { recursive: true });
-  initExpress();
+  return initExpress();
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -73,7 +73,7 @@ function buildPngFromScad(pathScad) {
   return pathPng;
 }
 
-function initExpress() {
+function initExpress(): express.Express {
   const app = express();
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
@@ -148,7 +148,7 @@ function initExpress() {
   return app;
 }
 
-function isParamsValid(params: Record<string, any>): boolean {
+export function isParamsValid(params: Record<string, any>): boolean {
   const mParams = getModelConfig(params.model)?.params;
   if (!mParams) return false;
   for (const p of mParams) {
@@ -160,8 +160,11 @@ function isParamsValid(params: Record<string, any>): boolean {
   return true;
 }
 
-function getFrontConfig(): { models: any[]; kits: any[] } {
-  const conf: { models: any[]; kits: any[] } = { models: [], kits: [] };
+export function getFrontConfig(): { models: Omit<ModelDefinition, 'generator'>[]; kits: Kit[] } {
+  const conf: { models: Omit<ModelDefinition, 'generator'>[]; kits: Kit[] } = {
+    models: [],
+    kits: [],
+  };
   for (const name in models) {
     const m = { ...models[name] };
     delete m.generator;
@@ -178,7 +181,7 @@ function getFrontConfig(): { models: any[]; kits: any[] } {
 }
 
 // return stl data, create scad and stl from params if not exists
-function getStl(params) {
+function getStl(params: Record<string, any>): StlInfo | { error: string } {
   const pathScad = saveScad(params);
   if (!pathScad || (pathScad as any)?.error) {
     return { error: 'Failed: ' + (pathScad as any)?.error };
@@ -204,7 +207,7 @@ function getStl(params) {
 }
 
 // create and return zip archive
-function getKit(kitName: string): { path: string; filename: string } | { error: string } {
+function getKit(kitName: string): KitArchive | { error: string } {
   const kit = config.kits.find((el) => el.name === kitName);
   if (!kit) {
     return { error: `Kit not exists: ${kitName}` };
@@ -262,7 +265,7 @@ function getKit(kitName: string): { path: string; filename: string } | { error: 
   };
 }
 
-function resSendFile(res, filePath, filename) {
+function resSendFile(res: express.Response, filePath: string, filename: string): void {
   res.setHeader(
     'Content-Disposition',
     'attachment; filename=' + encodeURIComponent(filename)

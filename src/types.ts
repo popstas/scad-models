@@ -22,3 +22,37 @@ export interface ModelDefinition {
   params: ModelParam[];
   presets?: Preset[];
 }
+
+export interface KitItem {
+  model: string;
+  id: string;
+}
+
+export interface Kit {
+  name: string;
+  name_ru: string;
+  items: KitItem[];
+}
+
+export interface Config {
+  cache_enabled: boolean;
+  cachePath: string;
+  material: {
+    density: number;
+  };
+  port: number;
+  kits: Kit[];
+}
+
+export interface StlInfo {
+  stlPath: string;
+  image: string;
+  volume: number;
+  weight: number;
+  box: any;
+}
+
+export interface KitArchive {
+  path: string;
+  filename: string;
+}
