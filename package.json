@@ -1,10 +1,10 @@
 {
   "scripts": {
-    "start": "npm run dev",
-    "dev": "nodemon --watch src src/index.js && openscad dist/output.scad",
-    "render": "node src/index.js && openscad dist/output.scad -o dist/output.stl",
-    "test": "mocha",
-    "build": "tsc"
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch src --exec ts-node src/index.ts && openscad dist/output.scad",
+    "render": "ts-node src/index.ts && openscad dist/output.scad -o dist/output.stl",
+    "test": "npm run build && mocha",
+    "build": "tsc && cp -r src/models/presets dist/models/"
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
@@ -24,7 +24,7 @@
   },
   "name": "scad-models",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/popstas/scad-models",
   "license": "MIT",
   "type": "module"

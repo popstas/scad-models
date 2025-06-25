@@ -1,5 +1,5 @@
 import { strict as assert } from 'assert';
-import { getFilename } from '../src/index.js';
+import { getFilename } from '../dist/index.js';
 
 describe('getFilename', () => {
   it('generates predictable filename with sanitized params and date', () => {

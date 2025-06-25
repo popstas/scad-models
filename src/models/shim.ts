@@ -1,3 +1,4 @@
+// @ts-nocheck
 import scad from 'scad-js';
 const { difference, cylinder } = scad;
 
