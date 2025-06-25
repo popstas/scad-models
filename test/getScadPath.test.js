@@ -1,5 +1,5 @@
 import { strict as assert } from 'assert';
-import { getScadPath } from '../src/index.js';
+import { getScadPath } from '../dist/index.js';
 
 describe('getScadPath', () => {
   it('returns path based on cache directory and params key', () => {

@@ -1,7 +1,7 @@
 import { strict as assert } from 'assert';
 import fs from 'fs';
-import { sanitizePresetName } from '../src/index.js';
-import { loadPresets } from '../src/models/index.js';
+import { sanitizePresetName } from '../dist/index.js';
+import { loadPresets } from '../dist/models/index.js';
 
 describe('preset utils', () => {
   it('sanitizePresetName keeps allowed chars', () => {
