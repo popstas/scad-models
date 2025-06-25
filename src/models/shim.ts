@@ -9,7 +9,7 @@ function generator(params) {
 
   return difference(
     cylinder(wall, outer, { center: false }),
-    cylinder(wall, inner, { center: false }),
+    cylinder(wall, inner, { center: false })
   );
 }
 
@@ -43,6 +43,4 @@ export default {
       default: 10,
     },
   ],
-
-  
 };

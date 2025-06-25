@@ -4,7 +4,9 @@
     "dev": "nodemon --watch src --exec ts-node src/index.ts && openscad dist/output.scad",
     "render": "ts-node src/index.ts && openscad dist/output.scad -o dist/output.stl",
     "test": "npm run build && mocha",
-    "build": "tsc && cp -r src/models/presets dist/models/"
+    "build": "tsc && cp -r src/models/presets dist/models/",
+    "lint": "eslint . --ext .js,.ts",
+    "format": "prettier --write \"**/*.{js,ts}\""
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
@@ -20,7 +22,12 @@
     "chai": "^4.4.1",
     "typescript": "^5.4.2",
     "ts-node": "^10.9.2",
-    "@types/node": "^20.9.0"
+    "@types/node": "^20.9.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.1.1",
+    "@typescript-eslint/parser": "^7.4.0",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "eslint-config-prettier": "^9.1.0"
   },
   "name": "scad-models",
   "version": "1.0.0",

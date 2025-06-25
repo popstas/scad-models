@@ -1,6 +1,6 @@
 // @ts-nocheck
 import scad from 'scad-js';
-const { difference, cube, rounded_cube } = scad;
+const { difference, rounded_cube } = scad;
 
 function generator(params) {
   const wall = parseFloat(params.wall);
@@ -13,8 +13,12 @@ function generator(params) {
   return difference(
     // cube([width, depth, height], { center: false }).translate([0, 0, 0]),
     // cube([width-wall*2, depth-wall*2, height], { center: false }).translate([wall, wall, wall])
-    rounded_cube([width, depth, height], round_size, { center: false }).translate([0, 0, 0]),
-    rounded_cube([width-wall*2, depth-wall*2, height], round_size, { center: false }).translate([wall, wall, wall]),
+    rounded_cube([width, depth, height], round_size, {
+      center: false,
+    }).translate([0, 0, 0]),
+    rounded_cube([width - wall * 2, depth - wall * 2, height], round_size, {
+      center: false,
+    }).translate([wall, wall, wall])
   ).translate(0, params.height, params.height * -1);
 }
 
@@ -62,5 +66,4 @@ export default {
       default: 50,
     },
   ],
-
 };

@@ -10,7 +10,7 @@ function generator(params) {
 
   return difference(
     cube([width, depth, height], { center: true }),
-    cube([width-wall*2, depth-wall*2, height], { center: true }),
+    cube([width - wall * 2, depth - wall * 2, height], { center: true })
   );
 }
 
@@ -51,6 +51,4 @@ export default {
       default: 50,
     },
   ],
-
-  
 };

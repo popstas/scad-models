@@ -89,12 +89,14 @@ function initExpress() {
 
   app.post('/api/getStl', async (req, res) => {
     const params = req.body;
-    const noCache = params.cache !== undefined && ['0', 'false', false].includes(params.cache);
+    const noCache =
+      params.cache !== undefined &&
+      ['0', 'false', false].includes(params.cache);
     const currentCache = config.cache_enabled;
 
     if (noCache) {
       config.cache_enabled = false;
-      console.log("noCache");
+      console.log('noCache');
     }
     const stlData = getStl(params);
     if (noCache) config.cache_enabled = currentCache;
@@ -140,14 +142,16 @@ function initExpress() {
     resSendFile(res, kitData.path, kitData.filename);
   });
 
-  app.listen(config.port, () => { console.log(`listen port ${config.port}`); });
+  app.listen(config.port, () => {
+    console.log(`listen port ${config.port}`);
+  });
   return app;
 }
 
 function isParamsValid(params) {
   const mParams = getModelConfig(params.model)?.params;
   if (!mParams) return false;
-  for (let p of mParams) {
+  for (const p of mParams) {
     if (['', undefined].includes(params[p.name])) {
       console.log(`params.${p.name} not valid`);
       return false;
@@ -158,12 +162,12 @@ function isParamsValid(params) {
 
 function getFrontConfig() {
   const conf = { models: [] };
-  for (let name in models) {
+  for (const name in models) {
     const m = { ...models[name] };
-    delete (m.generator);
+    delete m.generator;
     conf.models.push(m);
 
-    for (let p of m.presets) {
+    for (const p of m.presets) {
       const pathScad = getScadPath({ model: m.name, ...p.params });
       const pathPng = pathScad.replace(/\.scad$/, '.png');
       p.image = pathPng.replace('./data', 'models');
@@ -201,7 +205,7 @@ function getStl(params) {
 
 // create and return zip archive
 function getKit(kitName) {
-  const kit = config.kits.find(el => el.name === kitName);
+  const kit = config.kits.find((el) => el.name === kitName);
   if (!kit) {
     return { error: `Kit not exists: ${kitName}` };
   }
@@ -216,8 +220,8 @@ function getKit(kitName) {
     let isValid = true;
 
     // get presets
-    const items = kit.items.map(item => {
-      const preset = models[item.model]?.presets?.find(m => m.id === item.id);
+    const items = kit.items.map((item) => {
+      const preset = models[item.model]?.presets?.find((m) => m.id === item.id);
       if (!preset) isValid = false;
       return { ...preset, model: item.model };
     });
@@ -227,7 +231,7 @@ function getKit(kitName) {
 
     // Save to zip
     const zip = new AdmZip();
-    for (let item of items) {
+    for (const item of items) {
       const pathScad = saveScad({ ...item.params, model: item.model });
       if (!pathScad || pathScad?.error) {
         isValid = false;
@@ -259,7 +263,10 @@ function getKit(kitName) {
 }
 
 function resSendFile(res, filePath, filename) {
-  res.setHeader('Content-Disposition', 'attachment; filename=' + encodeURIComponent(filename));
+  res.setHeader(
+    'Content-Disposition',
+    'attachment; filename=' + encodeURIComponent(filename)
+  );
   res.setHeader('Content-Transfer-Encoding', 'binary');
   res.setHeader('Content-Type', 'application/octet-stream');
 
@@ -269,7 +276,7 @@ function resSendFile(res, filePath, filename) {
 function fillParamsDefault(params) {
   const mParams = getModelConfig(params.model)?.params;
   if (!mParams) return params;
-  for (let p of mParams) {
+  for (const p of mParams) {
     if (params[p.name] === undefined) {
       params[p.name] = p.default;
     }
@@ -304,7 +311,7 @@ function saveScad(params) {
 
   console.log('Generate...');
   const output = generator(params);
-  const rotated = output;//.rotate([180, 180, 0])
+  const rotated = output; //.rotate([180, 180, 0])
 
   // const date = new Date().toISOString().replace(/[:]/g, '_');
   // const name = sanitize(params.name) ? `__${sanitize(params.name)}` : '';
@@ -320,10 +327,10 @@ export function getCacheKey(params) {
   const parts = [];
   const mParams = getModelConfig(params.model)?.params;
 
-  for (let name in params) {
+  for (const name in params) {
     // if (name === 'name') continue; // skip as not affected model
     // if (name === 'model') continue; // skip as not affected model
-    if (!mParams.find(el => el.name === name)) continue; // skip as not affected model
+    if (!mParams.find((el) => el.name === name)) continue; // skip as not affected model
 
     parts.push({ name, value: params[name] });
   }
@@ -334,7 +341,9 @@ export function getCacheKey(params) {
     return 0;
   });
 
-  const paramsQuery = parts.map(p => `${p.name}=${encodeURIComponent(p.value)}`).join(',');
+  const paramsQuery = parts
+    .map((p) => `${p.name}=${encodeURIComponent(p.value)}`)
+    .join(',');
   const key = `${params.model}-${paramsQuery}`.substring(0, 250);
   return key;
 }
@@ -343,7 +352,11 @@ export function getFilename(params) {
   // const h = new Date().getHours();
   // const m = new Date().getMinutes();
   // const date = Y-m-d_h-i
-  const date = new Date().toISOString().replace(/[:]/g, '_').replace(/T/, '_').replace(/\..+/, '');
+  const date = new Date()
+    .toISOString()
+    .replace(/[:]/g, '_')
+    .replace(/T/, '_')
+    .replace(/\..+/, '');
   let filename = getCacheKey(params)
     .replace('-', `-${date}-`)
     .replace(/=/g, '')
