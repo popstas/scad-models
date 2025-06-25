@@ -1,4 +1,3 @@
-// @ts-nocheck
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
@@ -6,6 +5,7 @@ import bodyParser from 'body-parser';
 import { exec, execSync } from 'child_process';
 import config from '../config.js';
 import models, { loadPresets } from './models/index.js';
+import type { ModelDefinition, Preset } from './types.js';
 import NodeStl from 'node-stl';
 import AdmZip from 'adm-zip';
 import { fileURLToPath } from 'url';
@@ -19,7 +19,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   start();
 }
 
-function getModelConfig(name) {
+function getModelConfig(name: string): ModelDefinition | undefined {
   return models[name];
 }
 
@@ -120,8 +120,8 @@ function initExpress() {
   });
 
   app.get('/api/downloadStl', (req, res) => {
-    const pathScad = saveScad(req.query);
-    if (!pathScad || pathScad?.error) {
+    const pathScad = saveScad(req.query as any);
+    if (!pathScad || (pathScad as any)?.error) {
       res.end('404');
       return;
     }
@@ -132,14 +132,14 @@ function initExpress() {
   });
 
   app.get('/api/downloadkit', async (req, res) => {
-    const kitName = req.query.name;
+    const kitName = req.query.name as string;
     const kitData = getKit(kitName);
-    if (kitData.error) {
+    if ((kitData as any).error) {
       res.json(kitData);
       return;
     }
 
-    resSendFile(res, kitData.path, kitData.filename);
+    resSendFile(res, (kitData as any).path, (kitData as any).filename);
   });
 
   app.listen(config.port, () => {
@@ -148,7 +148,7 @@ function initExpress() {
   return app;
 }
 
-function isParamsValid(params) {
+function isParamsValid(params: Record<string, any>): boolean {
   const mParams = getModelConfig(params.model)?.params;
   if (!mParams) return false;
   for (const p of mParams) {
@@ -160,8 +160,8 @@ function isParamsValid(params) {
   return true;
 }
 
-function getFrontConfig() {
-  const conf = { models: [] };
+function getFrontConfig(): { models: any[]; kits: any[] } {
+  const conf: { models: any[]; kits: any[] } = { models: [], kits: [] };
   for (const name in models) {
     const m = { ...models[name] };
     delete m.generator;
@@ -180,12 +180,12 @@ function getFrontConfig() {
 // return stl data, create scad and stl from params if not exists
 function getStl(params) {
   const pathScad = saveScad(params);
-  if (!pathScad || pathScad?.error) {
-    return { error: 'Failed: ' + pathScad?.error };
+  if (!pathScad || (pathScad as any)?.error) {
+    return { error: 'Failed: ' + (pathScad as any)?.error };
   }
 
-  const pathPng = buildPngFromScad(pathScad);
-  const pathStl = getStlFromScad(pathScad);
+  const pathPng = buildPngFromScad(pathScad as string);
+  const pathStl = getStlFromScad(pathScad as string);
 
   if (!pathStl) {
     return { error: 'Failed to convert SCAD to STL' };
@@ -204,7 +204,7 @@ function getStl(params) {
 }
 
 // create and return zip archive
-function getKit(kitName) {
+function getKit(kitName: string): { path: string; filename: string } | { error: string } {
   const kit = config.kits.find((el) => el.name === kitName);
   if (!kit) {
     return { error: `Kit not exists: ${kitName}` };
@@ -233,20 +233,20 @@ function getKit(kitName) {
     const zip = new AdmZip();
     for (const item of items) {
       const pathScad = saveScad({ ...item.params, model: item.model });
-      if (!pathScad || pathScad?.error) {
+      if (!pathScad || (pathScad as any)?.error) {
         isValid = false;
         continue;
       }
 
       // add scad
-      zip.addLocalFile(pathScad);
+      zip.addLocalFile(pathScad as string);
 
       // add stl
-      const pathStl = getStlFromScad(pathScad);
+      const pathStl = getStlFromScad(pathScad as string);
       zip.addLocalFile(pathStl);
 
       // add zip
-      const pathPng = buildPngFromScad(pathScad);
+      const pathPng = buildPngFromScad(pathScad as string);
       if (fs.existsSync(pathPng)) {
         zip.addLocalFile(pathPng);
       }
@@ -273,7 +273,7 @@ function resSendFile(res, filePath, filename) {
   res.sendFile(path.resolve(filePath));
 }
 
-function fillParamsDefault(params) {
+export function fillParamsDefault(params: Record<string, any>): Record<string, any> {
   const mParams = getModelConfig(params.model)?.params;
   if (!mParams) return params;
   for (const p of mParams) {
@@ -284,7 +284,7 @@ function fillParamsDefault(params) {
   return params;
 }
 
-function saveScad(params) {
+function saveScad(params: Record<string, any>): string | { error: string } {
   console.log('params:', params);
   params = fillParamsDefault(params);
   console.log('params filled:', params);
@@ -323,7 +323,7 @@ function saveScad(params) {
   return filePath;
 }
 
-export function getCacheKey(params) {
+export function getCacheKey(params: Record<string, any>): string {
   const parts = [];
   const mParams = getModelConfig(params.model)?.params;
 
@@ -348,7 +348,7 @@ export function getCacheKey(params) {
   return key;
 }
 
-export function getFilename(params) {
+export function getFilename(params: Record<string, any>): string {
   // const h = new Date().getHours();
   // const m = new Date().getMinutes();
   // const date = Y-m-d_h-i
@@ -372,12 +372,12 @@ export function getFilename(params) {
   return filename;
 }
 
-export function getScadPath(params) {
+export function getScadPath(params: Record<string, any>): string {
   const key = getCacheKey(params);
   return `${config.cachePath}/${key}.scad`;
 }
 
-function getCacheModel(params) {
+function getCacheModel(params: Record<string, any>): string | false | undefined {
   if (!config.cache_enabled) return false;
   const filePath = getScadPath(params);
   if (fs.existsSync(filePath)) {
@@ -385,6 +385,6 @@ function getCacheModel(params) {
   }
 }
 
-export function sanitizePresetName(name) {
+export function sanitizePresetName(name: string): string {
   return name.replace(/[^A-Za-z0-9\- ()]+/g, '').trim();
 }

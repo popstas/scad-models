@@ -1,18 +1,18 @@
-// @ts-nocheck
 import scad from 'scad-js';
+import type { ModelDefinition } from '../types.js';
 const { difference, cylinder, union } = scad;
 
-function generator(params) {
-  params.part1_diam = parseFloat(params.part1_diam / 2);
-  params.part3_diam = parseFloat(params.part3_diam / 2);
-  const wall = parseFloat(params.wall); //0.8; //толщина стенок
+function generator(params: Record<string, any>): any {
+  params.part1_diam = Number(params.part1_diam / 2);
+  params.part3_diam = Number(params.part3_diam / 2);
+  const wall = Number(params.wall); //0.8; //толщина стенок
 
-  params.part1_height = parseFloat(params.part1_height);
-  params.part2_height = parseFloat(params.part2_height);
-  params.part3_height = parseFloat(params.part3_height);
+  params.part1_height = Number(params.part1_height);
+  params.part2_height = Number(params.part2_height);
+  params.part3_height = Number(params.part3_height);
 
-  // params.part3_top = parseFloat(params.part3_top / 2);
-  // params.part3_bottom = parseFloat(params.part3_top / 2);
+  // params.part3_top = Number(params.part3_top / 2);
+  // params.part3_bottom = Number(params.part3_top / 2);
 
   // const obod = 5.9; //кольцо,широкая часть с ободом (радиус):
 
@@ -47,7 +47,7 @@ function generator(params) {
   return union(topPart, middlePart, bottomPart);
 }
 
-export default {
+const model: ModelDefinition = {
   generator,
   name: 'funnel',
   label: 'Funnel',
@@ -100,3 +100,5 @@ export default {
     },
   ],
 };
+
+export default model;

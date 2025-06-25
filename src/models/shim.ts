@@ -1,11 +1,11 @@
-// @ts-nocheck
 import scad from 'scad-js';
+import type { ModelDefinition } from '../types.js';
 const { difference, cylinder } = scad;
 
-function generator(params) {
-  const inner = parseFloat(params.inner / 2);
-  const outer = parseFloat(params.outer / 2);
-  const wall = parseFloat(params.wall);
+function generator(params: Record<string, any>): any {
+  const inner = Number(params.inner / 2);
+  const outer = Number(params.outer / 2);
+  const wall = Number(params.wall);
 
   return difference(
     cylinder(wall, outer, { center: false }),
@@ -13,7 +13,7 @@ function generator(params) {
   );
 }
 
-export default {
+const model: ModelDefinition = {
   generator,
   name: 'shim',
   label: 'Shim',
@@ -44,3 +44,5 @@ export default {
     },
   ],
 };
+
+export default model;

@@ -1,13 +1,13 @@
-// @ts-nocheck
 import scad from 'scad-js';
+import type { ModelDefinition } from '../types.js';
 const { difference, rounded_cube } = scad;
 
-function generator(params) {
-  const wall = parseFloat(params.wall);
-  const width = parseFloat(params.width);
-  const height = parseFloat(params.height);
-  const depth = parseFloat(params.depth);
-  const round_size = parseFloat(params.round_size);
+function generator(params: Record<string, any>): any {
+  const wall = Number(params.wall);
+  const width = Number(params.width);
+  const height = Number(params.height);
+  const depth = Number(params.depth);
+  const round_size = Number(params.round_size);
 
   // cube([width, depth, wall], { center: false }).translate([0, 0, wall]),
   return difference(
@@ -22,7 +22,7 @@ function generator(params) {
   ).translate(0, params.height, params.height * -1);
 }
 
-export default {
+const model: ModelDefinition = {
   generator,
   name: 'box',
   label: 'Box',
@@ -67,3 +67,5 @@ export default {
     },
   ],
 };
+
+export default model;
