@@ -15,7 +15,10 @@ describe('preset utils', () => {
 
     const dir = 'data/user-presets/testmodel';
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(dir + '/custom.json', JSON.stringify({ name: 'c', params: {} }));
+    fs.writeFileSync(
+      dir + '/custom.json',
+      JSON.stringify({ name: 'c', params: {} })
+    );
     const user = loadPresets('testmodel');
     assert.equal(user.length, 1);
     fs.rmSync('data/user-presets', { recursive: true, force: true });

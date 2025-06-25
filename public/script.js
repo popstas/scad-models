@@ -30,7 +30,14 @@ async function start() {
   const config = result.data;
 
   const router = new VueRouter({ mode: 'history' });
-  const persistentFields = ['params', 'stlUrl', 'stlParams', 'stlMeta', 'gridSize', 'lang'];
+  const persistentFields = [
+    'params',
+    'stlUrl',
+    'stlParams',
+    'stlMeta',
+    'gridSize',
+    'lang',
+  ];
   const computedFields = ['modelName', 's'];
 
   const store = new Vuex.Store({
@@ -61,8 +68,10 @@ async function start() {
         scad_edit_ru: 'SCAD - для OpenSCAD',
         link: 'Link',
         link_ru: 'Ссылка',
-        about: 'I often print same base models, just change sizes.<br/> This service created for speedup STL generate.',
-        about_ru: 'Я часто печатаю одни и те же базовые модели, только меняю размеры в модели.<br/> Этот сайт нужен, чтобы ускорить создание таких моделей.',
+        about:
+          'I often print same base models, just change sizes.<br/> This service created for speedup STL generate.',
+        about_ru:
+          'Я часто печатаю одни и те же базовые модели, только меняю размеры в модели.<br/> Этот сайт нужен, чтобы ускорить создание таких моделей.',
         model: 'Model',
         model_ru: 'Модель',
         preset: 'Preset',
@@ -75,7 +84,7 @@ async function start() {
         or_select_kit_ru: 'Или выберите набор:',
         scheme: 'Scheme',
         scheme_ru: 'Чертёж',
-      }
+      },
     },
     mutations: {
       ...mutationFabric([...persistentFields, ...computedFields]),
@@ -119,7 +128,7 @@ async function start() {
     computed: {
       ...computedFabric([...persistentFields, ...computedFields]),
       modelOptions() {
-        return config.models.map(el => {
+        return config.models.map((el) => {
           return {
             value: el.name,
             label: this.t(el, 'label') || el.name,
@@ -142,7 +151,7 @@ async function start() {
       },
 
       model() {
-        return config.models.find(el => el.name === this.modelName);
+        return config.models.find((el) => el.name === this.modelName);
       },
       previewImg() {
         return this.model?.preview;
@@ -157,12 +166,15 @@ async function start() {
       },
 
       kit() {
-        const kit = config.kits.find(el => el.name === this.kitName);
+        const kit = config.kits.find((el) => el.name === this.kitName);
         if (!kit) return;
-        const items = kit.items.map(item => {
-          const model = config.models.find(el => el.name === item.model);
-          const preset = model?.presets?.find(m => m.id === item.id);
-          preset.name = this.modelOptions.find(m => m.value === item.model)?.label + ': ' + this.t(preset, 'name');
+        const items = kit.items.map((item) => {
+          const model = config.models.find((el) => el.name === item.model);
+          const preset = model?.presets?.find((m) => m.id === item.id);
+          preset.name =
+            this.modelOptions.find((m) => m.value === item.model)?.label +
+            ': ' +
+            this.t(preset, 'name');
           if (!preset) isValid = false;
           preset.params.model = item.model;
           return { ...preset, model: item.model };
@@ -181,7 +193,7 @@ async function start() {
       downloadUrl() {
         const esc = encodeURIComponent;
         const query = Object.keys(this.stlParams)
-          .map(k => esc(k) + '=' + esc(this.stlParams[k]))
+          .map((k) => esc(k) + '=' + esc(this.stlParams[k]))
           .join('&');
         return '/api/downloadStl?' + query;
       },
@@ -190,7 +202,7 @@ async function start() {
         const esc = encodeURIComponent;
         const params = { name: this.kitName };
         const query = Object.keys(params)
-          .map(k => esc(k) + '=' + esc(params[k]))
+          .map((k) => esc(k) + '=' + esc(params[k]))
           .join('&');
         return '/api/downloadkit?' + query;
       },
@@ -202,7 +214,7 @@ async function start() {
           Math.round(this.stlMeta.weight) + 'g',
         ];
         return parts.join(', ');
-      }
+      },
     },
 
     created() {
@@ -215,9 +227,13 @@ async function start() {
       if (!this.modelName) this.modelName = this.params.model;
       this.updateSizes();
 
-      window.addEventListener('scroll', () => {
-        this.updateSizes();
-      }, { passive: true });
+      window.addEventListener(
+        'scroll',
+        () => {
+          this.updateSizes();
+        },
+        { passive: true }
+      );
 
       setTimeout(this.saveStl, 100);
     },
@@ -272,10 +288,11 @@ async function start() {
         if (!params) params = this.params;
         params = { ...params, name: this.name };
         this.params = params;
-        if (params.model && params.model !== this.modelName) this.modelName = params.model;
+        if (params.model && params.model !== this.modelName)
+          this.modelName = params.model;
         if (!params.model) params.model = this.modelName; // TODO: запутался, тут лишние проверки модели туда-сюда
         if (!params.model) return;
-        delete(params.cache); // TODO: он не должен попадать сюда
+        delete params.cache; // TODO: он не должен попадать сюда
         if (!this.cache_enabled) params.cache = false;
         this.setUrlFromParams();
 
@@ -306,7 +323,8 @@ async function start() {
         let isChanged = false;
         for (let name in this.params) {
           // only "model" and model params
-          if (name !== 'model' && !mParams.find(el => el.name === name)) continue; // skip as not affected model
+          if (name !== 'model' && !mParams.find((el) => el.name === name))
+            continue; // skip as not affected model
 
           if (this.params[name] !== this.$route.query[name]) isChanged = true; // check for changes
           query[name] = this.params[name];
@@ -317,7 +335,7 @@ async function start() {
 
       setParamsFromUrl() {
         for (let name in this.$route.query) {
-          const val = this.$route.query[name]
+          const val = this.$route.query[name];
 
           if (name === 'cache') {
             this.cache_enabled = val != '0' && val;
@@ -357,7 +375,7 @@ async function start() {
         this.presetName = '';
         location.reload();
       },
-    }
+    },
   });
 }
 

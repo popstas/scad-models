@@ -12,7 +12,7 @@ function loadPresets(modelName) {
   const result = [];
   const builtinDir = path.join(__dirname, 'presets', modelName);
   const userDir = path.resolve('data/user-presets', modelName);
-  [builtinDir, userDir].forEach(dir => {
+  [builtinDir, userDir].forEach((dir) => {
     if (!fs.existsSync(dir)) return;
     for (const file of fs.readdirSync(dir)) {
       if (!file.endsWith('.json')) continue;

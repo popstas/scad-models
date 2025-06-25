@@ -1,9 +1,9 @@
 // @ts-nocheck
 import scad from 'scad-js';
-const { difference, cylinder, union, g } = scad;
+const { difference, cylinder, union } = scad;
 
 function generator(params) {
-  console.log({params})
+  console.log({ params });
   const height = parseFloat(params.height);
   const bottom_height = parseFloat(params.bottom_height);
   const radius = parseFloat(params.diameter / 2);
@@ -11,14 +11,16 @@ function generator(params) {
   const wall = parseFloat(params.wall);
   const count = parseInt(params.count);
 
-
-  return union(difference(
-    cylinder(height, radius, { center: false, $fn: count }),
-    cylinder(height, radius - wall, { center: false, $fn: count }),
-  ), difference(
-    cylinder(bottom_height, radius, { $fn: count }),
-    cylinder(bottom_height, hole_radius, { $fn: count }),
-  ));
+  return union(
+    difference(
+      cylinder(height, radius, { center: false, $fn: count }),
+      cylinder(height, radius - wall, { center: false, $fn: count })
+    ),
+    difference(
+      cylinder(bottom_height, radius, { $fn: count }),
+      cylinder(bottom_height, hole_radius, { $fn: count })
+    )
+  );
 }
 
 export default {
@@ -71,8 +73,5 @@ export default {
       type: 'input',
       default: 1,
     },
-
   ],
-
-  
 };

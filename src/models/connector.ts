@@ -1,6 +1,6 @@
 // @ts-nocheck
 import scad from 'scad-js';
-const { difference, cylinder, union, rotate } = scad;
+const { difference, cylinder, union } = scad;
 
 // console.log(`scad: `, scad);
 function generator(params) {
@@ -27,24 +27,20 @@ function generator(params) {
 
   const topPart = difference(
     cylinder(params.part1_height, params.part1_diam, { center: false }),
-    cylinder(params.part1_height, params.part1_diam - wall, { center: false }),
+    cylinder(params.part1_height, params.part1_diam - wall, { center: false })
   ).translate([0, 0, partOffset[0]]);
 
   const middlePart = difference(
     cylinder(params.part2_height, params.part2_diam, { center: false }),
-    cylinder(params.part2_height, params.part1_diam - wall, { center: false }),
+    cylinder(params.part2_height, params.part1_diam - wall, { center: false })
   ).translate([0, 0, partOffset[1]]);
 
   const bottomPart = difference(
     cylinder(params.part3_height, params.part3_diam, { center: false }),
-    cylinder(params.part3_height, params.part3_diam - wall, { center: false }),
+    cylinder(params.part3_height, params.part3_diam - wall, { center: false })
   ).translate([0, 0, partOffset[2]]);
 
-  const allParts = union(
-    topPart,
-    middlePart,
-    bottomPart,
-  );
+  const allParts = union(topPart, middlePart, bottomPart);
 
   return allParts;
 }

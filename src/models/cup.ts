@@ -9,17 +9,15 @@ function generator(params) {
   const wall = parseFloat(params.wall); //0.8; //толщина стенок
 
   const topPart = difference(
-    cylinder(height, [bottom_diam, top_diam,], { center: false }),
-    cylinder(height, [bottom_diam - wall, top_diam - wall], { center: false }),
+    cylinder(height, [bottom_diam, top_diam], { center: false }),
+    cylinder(height, [bottom_diam - wall, top_diam - wall], { center: false })
   ).translate([0, 0, 0]);
 
-  const bottomPart = cylinder(wall, bottom_diam, { center: false })
-    .translate([0, 0, 0]);
+  const bottomPart = cylinder(wall, bottom_diam, { center: false }).translate([
+    0, 0, 0,
+  ]);
 
-  return union(
-    topPart,
-    bottomPart,
-  );
+  return union(topPart, bottomPart);
 }
 
 export default {
@@ -59,6 +57,4 @@ export default {
       default: 10,
     },
   ],
-
-  
 };

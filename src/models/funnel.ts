@@ -25,24 +25,26 @@ function generator(params) {
 
   const topPart = difference(
     cylinder(params.part1_height, params.part1_diam, { center: false }),
-    cylinder(params.part1_height, params.part1_diam - wall, { center: false }),
+    cylinder(params.part1_height, params.part1_diam - wall, { center: false })
   ).translate([0, 0, partOffset[0]]);
 
   const middlePart = difference(
-    cylinder(params.part2_height, [params.part1_diam, params.part3_diam], { center: false }),
-    cylinder(params.part2_height, [params.part1_diam - wall, params.part3_diam - wall], { center: false }),
+    cylinder(params.part2_height, [params.part1_diam, params.part3_diam], {
+      center: false,
+    }),
+    cylinder(
+      params.part2_height,
+      [params.part1_diam - wall, params.part3_diam - wall],
+      { center: false }
+    )
   ).translate([0, 0, partOffset[1]]);
 
   const bottomPart = difference(
     cylinder(params.part3_height, params.part3_diam, { center: false }),
-    cylinder(params.part3_height, params.part3_diam - wall, { center: false }),
+    cylinder(params.part3_height, params.part3_diam - wall, { center: false })
   ).translate([0, 0, partOffset[2]]);
 
-  return union(
-    topPart,
-    middlePart,
-    bottomPart,
-  );
+  return union(topPart, middlePart, bottomPart);
 }
 
 export default {
@@ -73,7 +75,7 @@ export default {
       label_ru: 'Узкая высота',
       name: 'part3_height',
       type: 'input',
-      default: 10
+      default: 10,
     },
     {
       label: 'Middle Height',
@@ -94,7 +96,7 @@ export default {
       label_ru: 'Широкий диаметр',
       name: 'part1_diam',
       type: 'input',
-      default: 9.64
+      default: 9.64,
     },
   ],
 };

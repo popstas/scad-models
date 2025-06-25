@@ -42,7 +42,7 @@ export default {
           model: 'cap',
           id: 'connector_for_big_funnel',
         },
-      ]
-    }
+      ],
+    },
   ],
 };
