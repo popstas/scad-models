@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:22-slim
 
 # https://github.com/openscad/docker-openscad/blob/main/openscad/stretch/Dockerfile
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,7 +17,8 @@ RUN mkdir /home/node/code
 WORKDIR /home/node/code
 
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
+RUN npm run build
 
 COPY . .
 
