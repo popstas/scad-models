@@ -1,10 +1,12 @@
 {
+  "type": "module",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "nodemon --watch src --exec tsx src/index.ts && openscad dist/output.scad",
+    "start": "tsx src/index.ts",
+    "start-dist": "node dist/index.js",
+    "dev": "nodemon --watch src --exec tsx src/index.ts",
     "render": "tsx src/index.ts && openscad dist/output.scad -o dist/output.stl",
     "test": "npm run build && mocha",
-    "build": "tsc && cp -r src/models/presets dist/models/",
+    "build": "tsc && tsx src/copyPresets.ts",
     "lint": "eslint . --ext .js,.ts",
     "format": "prettier --write \"**/*.{js,ts}\""
   },
@@ -13,26 +15,25 @@
     "body-parser": "^1.20.0",
     "express": "^4.18.1",
     "node-stl": "^0.7.2",
-    "scad-js": "^0.5.0"
+    "nodemon": "^2.0.7",
+    "scad-js": "^0.5.0",
+    "tsx": "^4.20.3"
   },
   "devDependencies": {
-    "npm": "^8.9.0",
-    "nodemon": "^2.0.7",
-    "mocha": "^10.4.0",
-    "chai": "^4.4.1",
-    "typescript": "^5.4.2",
-    "tsx": "^4.20.3",
-    "@types/node": "^20.9.0",
-    "eslint": "^8.57.0",
-    "prettier": "^3.1.1",
-    "@typescript-eslint/parser": "^7.4.0",
+    "@types/node": "^20.19.1",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
-    "eslint-config-prettier": "^9.1.0"
+    "@typescript-eslint/parser": "^7.4.0",
+    "chai": "^4.4.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "mocha": "^10.4.0",
+    "npm": "^8.9.0",
+    "prettier": "^3.1.1",
+    "typescript": "^5.8.3"
   },
   "name": "scad-models",
   "version": "1.0.0",
   "main": "dist/index.js",
   "repository": "https://github.com/popstas/scad-models",
-  "license": "MIT",
-  "type": "module"
+  "license": "MIT"
 }

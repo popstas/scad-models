@@ -3,13 +3,14 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import { exec, execSync } from 'child_process';
-import config from './config.js';
+import config from '../config.js';
 import models, { loadPresets } from './models/index.js';
 import type { ModelDefinition, Preset, Config, StlInfo, Kit, KitArchive } from './types.js';
 import NodeStl from 'node-stl';
 import AdmZip from 'adm-zip';
 import { fileURLToPath } from 'url';
 
+console.log('config:', config);
 export function start(): express.Express {
   fs.mkdirSync(config.cachePath, { recursive: true });
   return initExpress();
@@ -165,6 +166,7 @@ export function getFrontConfig(): { models: Omit<ModelDefinition, 'generator'>[]
     models: [],
     kits: [],
   };
+  console.log('models:', models);
   for (const name in models) {
     const m = { ...models[name] };
     delete m.generator;
@@ -177,6 +179,7 @@ export function getFrontConfig(): { models: Omit<ModelDefinition, 'generator'>[]
     }
   }
   conf.kits = config.kits || [];
+  console.log('conf:', conf);
   return conf;
 }
 

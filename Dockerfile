@@ -18,9 +18,10 @@ WORKDIR /home/node/code
 
 COPY package.json package-lock.json ./
 RUN npm ci
-RUN npm run build
+RUN npm install -g typescript
+# RUN npm run build
 
 COPY . .
 
 EXPOSE 3014
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

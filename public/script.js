@@ -117,6 +117,7 @@ async function start() {
 
     watch: {
       modelName(val) {
+        console.log('modelName', val)
         this.params.model = val;
       },
       name(val) {
