@@ -64,6 +64,8 @@ async function start() {
         generate_stl_ru: 'Создать STL',
         stl_print: 'STL - print it',
         stl_print_ru: 'STL - на печать',
+        open_bambu: 'Open in Bambu Studio',
+        open_bambu_ru: 'Открыть в Bambu Studio',
         scad_edit: 'SCAD - edit in OpenSCAD',
         scad_edit_ru: 'SCAD - для OpenSCAD',
         link: 'Link',
@@ -196,6 +198,18 @@ async function start() {
           .map((k) => esc(k) + '=' + esc(this.stlParams[k]))
           .join('&');
         return '/api/downloadStl?' + query;
+      },
+
+      bambuUrl() {
+        if (!this.stlUrl) return '';
+        const fileUrl = `${window.location.origin}${this.downloadUrl}`;
+        const encodedUrl = encodeURIComponent(fileUrl);
+        const isApple =
+          /Mac|iPhone|iPad|iPod/i.test(navigator.platform) ||
+          /Mac OS X/i.test(navigator.userAgent);
+        return isApple
+          ? `bambustudioopen://${encodedUrl}`
+          : `bambustudio://open?file=${encodedUrl}`;
       },
 
       downloadkitUrl() {

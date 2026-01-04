@@ -213,6 +213,16 @@
               v-if="stlUrl"
               :href="downloadUrl"
             ><i class="el-icon-download"></i> {{ t(s, 'stl_print') }}</a>
+            <a
+              :class="{
+                  'download-link': true,
+                  'link__changed': !isParamsGenerated,
+                  'el-button': isParamsGenerated
+                }"
+              v-if="stlUrl"
+              :href="bambuUrl"
+              rel="nofollow"
+            ><i class="el-icon-link"></i> {{ t(s, 'open_bambu') }}</a>
             <div class="download-link">
               <span v-if="metaInfo" v-html="metaInfo"></span>
             </div>
