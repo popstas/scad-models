@@ -31,13 +31,14 @@ function loadPresets(modelName: string): Preset[] {
 // Read all files in the current directory
 const files = fs.readdirSync(__dirname);
 
-// Dynamically import all .js files except index.js
+// Dynamically import all .ts files except index.ts
 for (const file of files) {
-  if (file === 'index.js' || !file.endsWith('.js')) continue;
+  if (file === 'index.ts' || file === 'index.js' || (!file.endsWith('.ts') && !file.endsWith('.js'))) continue;
 
   try {
-    const moduleName = file.replace(/\.js$/, '');
-    const modulePath = `./${file}`;
+    const moduleName = file.replace(/\.(ts|js)$/, '');
+    // Use .js extension in import path (TypeScript convention - tsx will resolve .ts files)
+    const modulePath = `./${moduleName}.js`;
     const module = await import(modulePath);
     models[moduleName] = { ...(module as any).default, presets: [] };
   } catch (error) {
