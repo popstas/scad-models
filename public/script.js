@@ -233,7 +233,7 @@ async function start() {
           /Mac|iPhone|iPad|iPod/i.test(navigator.platform) ||
           /Mac OS X/i.test(navigator.userAgent);
         return isApple
-          ? `bambustudioopen://${fileUrl}`
+          ? `bambustudioopen://${encodedFileUrl}`
           : `bambustudio://open?file=${encodedFileUrl}`;
       },
 
