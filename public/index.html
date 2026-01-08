@@ -19,7 +19,7 @@
   <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
   <script src="https://unpkg.com/vue-3d-model@1.4.0/dist/vue-3d-model.umd.js"></script>
   <script src="https://unpkg.com/three@0.140.1/build/three.js"></script>
-  <script src="script.js?v=1"></script>
+  <script src="script.js?v=2"></script>
 
   <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.8/lib/theme-chalk/index.css">
   <link rel="stylesheet" href="style.css?v=1">
@@ -217,12 +217,33 @@
               :class="{
                   'download-link': true,
                   'link__changed': !isParamsGenerated,
+                  'el-button': isParamsGenerated,
+                  'el-button--success': isParamsGenerated
+                }"
+              style="margin-top:10px"
+              v-if="threeMfUrl"
+              :href="download3mfUrl"
+            ><i class="el-icon-download"></i> {{ t(s, 'three_mf_print') }}</a>
+            <el-button @click="save3mf()" type="primary" :disabled="isParamsGenerated && cache_enabled"
+                       v-html="t(s, 'generate_3mf')"></el-button>
+            <a
+              :class="{
+                  'download-link': true,
+                  'link__changed': !isParamsGenerated,
                   'el-button': isParamsGenerated
                 }"
               v-if="stlUrl"
               :href="bambuUrl"
               rel="nofollow"
             ><i class="el-icon-link"></i> {{ t(s, 'open_bambu') }}</a>
+            <el-button
+              v-if="stlUrl"
+              size="mini"
+              type="text"
+              @click="copyBambuUrl"
+              style="padding: 5px; font-size: 12px;"
+              title="Copy Bambu URL"
+            >📋</el-button>
             <div class="download-link">
               <span v-if="metaInfo" v-html="metaInfo"></span>
             </div>

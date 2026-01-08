@@ -35,6 +35,9 @@ async function start() {
     'stlUrl',
     'stlParams',
     'stlMeta',
+    'threeMfUrl',
+    'threeMfParams',
+    'threeMfMeta',
     'gridSize',
     'lang',
   ];
@@ -51,6 +54,9 @@ async function start() {
       modelName: '',
       stlUrl: '',
       stlParams: {},
+      threeMfUrl: '',
+      threeMfParams: {},
+      threeMfMeta: {},
       gridSize: 31,
       lang: ['ru', 'ru-RU'].includes(window.navigator.language) ? 'ru' : 'en',
       s: {
@@ -64,6 +70,10 @@ async function start() {
         generate_stl_ru: 'Создать STL',
         stl_print: 'STL - print it',
         stl_print_ru: 'STL - на печать',
+        generate_3mf: 'Generate 3MF',
+        generate_3mf_ru: 'Создать 3MF',
+        three_mf_print: '3MF - print it',
+        three_mf_print_ru: '3MF - на печать',
         open_bambu: 'Open in Bambu Studio',
         open_bambu_ru: 'Открыть в Bambu Studio',
         scad_edit: 'SCAD - edit in OpenSCAD',
@@ -194,23 +204,37 @@ async function start() {
       },
 
       downloadUrl() {
-        const esc = encodeURIComponent;
-        const query = Object.keys(this.stlParams)
-          .map((k) => esc(k) + '=' + esc(this.stlParams[k]))
-          .join('&');
-        return '/api/downloadStl?' + query;
+        if (!this.stlParams || Object.keys(this.stlParams).length === 0) return '';
+        return this.buildDownloadUrl(this.stlParams, '.stl');
+      },
+
+      download3mfUrl() {
+        if (!this.threeMfParams || Object.keys(this.threeMfParams).length === 0) return '';
+        return this.buildDownloadUrl(this.threeMfParams, '.3mf');
       },
 
       bambuUrl() {
-        if (!this.stlUrl) return '';
-        const fileUrl = `${window.location.origin}${this.downloadUrl}`;
-        const encodedUrl = encodeURIComponent(fileUrl);
+        // Always use 3MF file for Bambu Studio
+        // Use threeMfParams if available, otherwise fallback to stlParams (will generate 3MF URL)
+        const params = this.threeMfParams && Object.keys(this.threeMfParams).length > 0 
+          ? this.threeMfParams 
+          : (this.stlParams && Object.keys(this.stlParams).length > 0 ? this.stlParams : null);
+        if (!params || Object.keys(params).length === 0) return '';
+        // Generate cache key and direct URL to cached file (no query params)
+        const cacheKey = this.buildCacheKey(params);
+        if (!cacheKey) return '';
+        const downloadUrl = `/download/${cacheKey}.3mf`;
+        const fileUrl = downloadUrl.startsWith('http') 
+          ? downloadUrl 
+          : `${window.location.origin}${downloadUrl}`;
+        // Encode only the file URL parameter value, not the whole URL
+        const encodedFileUrl = encodeURIComponent(fileUrl);
         const isApple =
           /Mac|iPhone|iPad|iPod/i.test(navigator.platform) ||
           /Mac OS X/i.test(navigator.userAgent);
         return isApple
-          ? `bambustudioopen://${encodedUrl}`
-          : `bambustudio://open?file=${encodedUrl}`;
+          ? `bambustudioopen://${fileUrl}`
+          : `bambustudio://open?file=${encodedFileUrl}`;
       },
 
       downloadkitUrl() {
@@ -254,6 +278,107 @@ async function start() {
     },
 
     methods: {
+      buildCacheKey(params) {
+        // Extract primitive values from reactive params to avoid circular dependencies
+        const plainParams = {};
+        for (let key in params) {
+          const value = params[key];
+          // Only include primitive values (string, number, boolean) or null/undefined
+          if (value == null || (typeof value !== 'object' && typeof value !== 'function')) {
+            plainParams[key] = value;
+          }
+        }
+        
+        const mParams = this.model?.params || [];
+        
+        // Build cache key (matching backend getCacheKey logic)
+        const parts = [];
+        for (let name in plainParams) {
+          // Include all params that are in model params (backend doesn't exclude 'model' or 'name')
+          if (!mParams.find((el) => el.name === name)) continue;
+          parts.push({ name, value: plainParams[name] });
+        }
+        
+        parts.sort((a, b) => {
+          if (a.name > b.name) return 1;
+          if (a.name < b.name) return -1;
+          return 0;
+        });
+        
+        const paramsQuery = parts
+          .map((p) => `${p.name}=${encodeURIComponent(String(p.value))}`)
+          .join(',');
+        const key = `${plainParams.model || ''}-${paramsQuery}`.substring(0, 250).replace(/,/g, '--');
+        
+        return key;
+      },
+
+      buildDownloadUrl(params, extension) {
+        // Extract primitive values from reactive params to avoid circular dependencies
+        const plainParams = {};
+        for (let key in params) {
+          const value = params[key];
+          // Only include primitive values (string, number, boolean) or null/undefined
+          if (value == null || (typeof value !== 'object' && typeof value !== 'function')) {
+            plainParams[key] = value;
+          }
+        }
+        
+        const mParams = this.model?.params || [];
+        
+        // Build cache key (similar to getCacheKey)
+        const parts = [];
+        for (let name in plainParams) {
+          if (name === 'model' || name === 'name') continue;
+          if (!mParams.find((el) => el.name === name)) continue;
+          parts.push({ name, value: plainParams[name] });
+        }
+        
+        parts.sort((a, b) => {
+          if (a.name > b.name) return 1;
+          if (a.name < b.name) return -1;
+          return 0;
+        });
+        
+        const paramsQuery = parts
+          .map((p) => `${p.name}=${encodeURIComponent(String(p.value))}`)
+          .join(',');
+        const key = `${plainParams.model || ''}-${paramsQuery}`.substring(0, 250);
+        
+        // Generate filename (similar to getFilename)
+        const date = new Date()
+          .toISOString()
+          .replace(/[:]/g, '_')
+          .replace(/T/, '_')
+          .replace(/\..+/, '');
+        let filename = key
+          .replace('-', `-${date}-`)
+          .replace(/=/g, '')
+          .replace(/,/g, '--')
+          .replace(/part/g, 'p')
+          .replace(/inner/g, 'in')
+          .replace(/height/g, 'h')
+          .replace(/top/g, 't')
+          .replace(/bottom/g, 'b')
+          .replace(/left/g, 'l')
+          .replace(/right/g, 'r')
+          .replace(/diam/g, 'd');
+        if (plainParams.name) filename += `-${plainParams.name}`;
+        
+        // Build query string - only include primitive values
+        const esc = encodeURIComponent;
+        const query = Object.keys(plainParams)
+          .map((k) => {
+            const value = plainParams[k];
+            // Convert to string, handling null/undefined
+            const stringValue = value == null ? '' : String(value);
+            return esc(k) + '=' + esc(stringValue);
+          })
+          .join('&');
+        
+        return `/download/${filename}${extension}?${query}`;
+      },
+
       t(el, field) {
         const langField = `${field}_${this.lang}`;
         if (el[langField]) return el[langField];
@@ -329,6 +454,48 @@ async function start() {
         this.stlParams = { ...params };
         this.stlMeta = answer.data;
         this.stlUrl = answer.data.stlPath + '?mt=' + Date.now();
+        
+        // Also generate 3MF automatically for Bambu Studio
+        this.statusText = 'Generating SCAD -> 3MF...';
+        const answer3mf = await axios.post('/api/get3mf', params);
+        this.statusText = '';
+        if (answer3mf.data && !answer3mf.data.error && answer3mf.data.threeMfPath) {
+          this.threeMfParams = { ...params };
+          this.threeMfMeta = answer3mf.data;
+          this.threeMfUrl = answer3mf.data.threeMfPath + '?mt=' + Date.now();
+        }
+      },
+
+      async save3mf(params) {
+        if (!params) params = this.params;
+        params = { ...params, name: this.name };
+        this.params = params;
+        if (params.model && params.model !== this.modelName)
+          this.modelName = params.model;
+        if (!params.model) params.model = this.modelName;
+        if (!params.model) return;
+        delete params.cache;
+        if (!this.cache_enabled) params.cache = false;
+        this.setUrlFromParams();
+
+        this.statusText = 'Generating SCAD -> 3MF...';
+        const answer = await axios.post('/api/get3mf', params);
+        this.statusText = '';
+        this.errorText = '';
+
+        if (!answer.data) return;
+
+        if (answer.data.error) {
+          console.error(answer.data.error);
+          this.errorText = answer.data.error;
+          return;
+        }
+
+        if (!answer.data.threeMfPath) return;
+
+        this.threeMfParams = { ...params };
+        this.threeMfMeta = answer.data;
+        this.threeMfUrl = answer.data.threeMfPath + '?mt=' + Date.now();
       },
 
       setUrlFromParams() {
@@ -389,6 +556,44 @@ async function start() {
         await axios.post('/api/savePreset', data);
         this.presetName = '';
         location.reload();
+      },
+
+      copyBambuUrl() {
+        if (!this.bambuUrl) return;
+        // Extract raw file URL without bambustudio://open?file= prefix
+        let fileUrl = this.bambuUrl;
+        // Remove bambustudio://open?file= prefix
+        fileUrl = fileUrl.replace(/^bambustudio:\/\/open\?file=/, '');
+        // Remove bambustudioopen:// prefix
+        fileUrl = fileUrl.replace(/^bambustudioopen:\/\//, '');
+        // Decode URL if it was encoded
+        try {
+          fileUrl = decodeURIComponent(fileUrl);
+        } catch (e) {
+          // If decoding fails, use as is
+        }
+        
+        // Copy URL to clipboard
+        const textarea = document.createElement('textarea');
+        textarea.value = fileUrl;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          // Show notification
+          this.$message({
+            message: 'File URL copied to clipboard',
+            type: 'success',
+            duration: 2000,
+            showClose: true
+          });
+        } catch (err) {
+          // Fallback: show URL in alert
+          alert('File URL:\n' + fileUrl);
+        }
+        document.body.removeChild(textarea);
       },
     },
   });

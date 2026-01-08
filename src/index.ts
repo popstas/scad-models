@@ -47,6 +47,23 @@ function getStlFromScad(pathScad) {
   return pathStl;
 }
 
+function get3mfFromScad(pathScad) {
+  const path3mf = pathScad.replace(/\.scad$/, '.3mf');
+  if (!fs.existsSync(path3mf) || !config.cache_enabled) {
+    try {
+      execSync(`openscad "${pathScad}" -o "${path3mf}"`);
+      console.log(`Saved to ${path3mf}`);
+    } catch (e) {
+      console.log('error while convert SCAD to 3MF:');
+      console.log('e.stderr:', e.stderr);
+      return false;
+    }
+  } else {
+    console.log('Use cached 3MF');
+  }
+  return path3mf;
+}
+
 function buildPngFromScad(pathScad) {
   const pathPng = pathScad.replace(/\.scad$/, '.png');
   if (fs.existsSync(pathPng) && config.cache_enabled) {
@@ -105,6 +122,23 @@ function initExpress(): express.Express {
     res.json(stlData);
   });
 
+  app.post('/api/get3mf', async (req, res) => {
+    const params = req.body;
+    const noCache =
+      params.cache !== undefined &&
+      ['0', 'false', false].includes(params.cache);
+    const currentCache = config.cache_enabled;
+
+    if (noCache) {
+      config.cache_enabled = false;
+      console.log('noCache');
+    }
+    const threeMfData = get3mf(params);
+    if (noCache) config.cache_enabled = currentCache;
+
+    res.json(threeMfData);
+  });
+
   app.post('/api/savePreset', (req, res) => {
     const { model, name, params } = req.body;
     if (!model || !name || !params) {
@@ -120,16 +154,41 @@ function initExpress(): express.Express {
     reloadPresets();
   });
 
-  app.get('/api/downloadStl', (req, res) => {
-    const pathScad = saveScad(req.query as any);
-    if (!pathScad || (pathScad as any)?.error) {
-      res.end('404');
+  app.get('/download/:filename', (req, res) => {
+    // If no query params, try to find file in cache by exact filename match
+    if (Object.keys(req.query).length === 0) {
+      const requestedFilename = req.params.filename;
+      // Filename should match cache file basename: model-param1=value1--param2=value2...stl
+      const cacheDir = config.cachePath;
+      if (fs.existsSync(cacheDir)) {
+        // Check if file exists in cache with exact name match
+        const pathFile = path.join(cacheDir, requestedFilename);
+        if (fs.existsSync(pathFile)) {
+          console.log(`Found cached file: ${requestedFilename}`);
+          resSendFile(res, pathFile, requestedFilename);
+          return;
+        }
+        console.log(`File not found in cache: ${requestedFilename}`);
+      }
+      // Return 404 if file not found in cache
+      res.status(404).end('File not found. Please use URL with query parameters to generate the file.');
       return;
     }
-    const pathStl = getStlFromScad(pathScad);
-
-    const filename = getFilename(req.query) + '.stl';
-    resSendFile(res, pathStl, filename);
+    
+    // Normal flow with query params
+    const pathScad = saveScad(req.query as any);
+    if (!pathScad || (pathScad as any)?.error) {
+      res.status(404).end('404');
+      return;
+    }
+    
+    // Determine file type from filename extension
+    const requestedFilename = req.params.filename;
+    const is3mf = requestedFilename.endsWith('.3mf');
+    const pathFile = is3mf ? get3mfFromScad(pathScad) : getStlFromScad(pathScad);
+    const extension = is3mf ? '.3mf' : '.stl';
+    const filename = getFilename(req.query) + extension;
+    resSendFile(res, pathFile, filename);
   });
 
   app.get('/api/downloadkit', async (req, res) => {
@@ -209,6 +268,28 @@ function getStl(params: Record<string, any>): StlInfo | { error: string } {
   };
 }
 
+// return 3mf data, create scad and 3mf from params if not exists
+function get3mf(params: Record<string, any>): { threeMfPath: string; image: string } | { error: string } {
+  const pathScad = saveScad(params);
+  if (!pathScad || (pathScad as any)?.error) {
+    return { error: 'Failed: ' + (pathScad as any)?.error };
+  }
+
+  const pathPng = buildPngFromScad(pathScad as string);
+  const path3mf = get3mfFromScad(pathScad as string);
+
+  if (!path3mf) {
+    return { error: 'Failed to convert SCAD to 3MF' };
+  }
+
+  const threeMfPath = path3mf.replace('./data', 'models');
+
+  return {
+    threeMfPath,
+    image: pathPng,
+  };
+}
+
 // create and return zip archive
 function getKit(kitName: string): KitArchive | { error: string } {
   const kit = config.kits.find((el) => el.name === kitName);
@@ -269,12 +350,37 @@ function getKit(kitName: string): KitArchive | { error: string } {
 }
 
 function resSendFile(res: express.Response, filePath: string, filename: string): void {
-  res.setHeader(
-    'Content-Disposition',
-    'attachment; filename=' + encodeURIComponent(filename)
-  );
-  res.setHeader('Content-Transfer-Encoding', 'binary');
-  res.setHeader('Content-Type', 'application/octet-stream');
+  // Determine file type and ensure correct extension
+  let safeFilename = filename;
+  let contentType: string;
+  
+  if (filename.endsWith('.zip')) {
+    contentType = 'application/zip';
+    safeFilename = filename;
+  } else if (filename.endsWith('.3mf')) {
+    contentType = 'application/octet-stream';
+    safeFilename = 'model.3mf';
+  } else {
+    // For STL files, ensure .stl extension
+    safeFilename = filename.endsWith('.stl') ? filename : filename + '.stl';
+    contentType = 'model/stl';
+  }
+  
+  // Sanitize filename for HTTP headers - remove invalid characters
+  // HTTP headers cannot contain: newlines, carriage returns, or control characters
+  // Also remove quotes and backslashes which can break the header
+  const sanitizedFilename = safeFilename
+    .replace(/[\r\n]/g, '') // Remove newlines and carriage returns
+    .replace(/[^\x20-\x7E]/g, '_') // Replace non-printable ASCII with underscore
+    .replace(/["\\]/g, '_'); // Replace quotes and backslashes
+  
+  // RFC 5987: filename* uses percent-encoding
+  // Format: filename*=charset'lang'value
+  const encodedFilename = encodeURIComponent(sanitizedFilename);
+  const contentDisposition = `attachment; filename="${sanitizedFilename}"; filename*=UTF-8''${encodedFilename}`;
+  
+  res.setHeader('Content-Disposition', contentDisposition);
+  res.setHeader('Content-Type', contentType);
 
   res.sendFile(path.resolve(filePath));
 }
@@ -350,7 +456,7 @@ export function getCacheKey(params: Record<string, any>): string {
   const paramsQuery = parts
     .map((p) => `${p.name}=${encodeURIComponent(p.value)}`)
     .join(',');
-  const key = `${params.model}-${paramsQuery}`.substring(0, 250);
+  const key = `${params.model}-${paramsQuery}`.substring(0, 250).replace(/,/g, '--');
   return key;
 }
 
@@ -366,6 +472,7 @@ export function getFilename(params: Record<string, any>): string {
   let filename = getCacheKey(params)
     .replace('-', `-${date}-`)
     .replace(/=/g, '')
+    .replace(/,/g, '--')
     .replace(/part/g, 'p')
     .replace(/inner/g, 'in')
     .replace(/height/g, 'h')
